@@ -65,6 +65,7 @@ import {
   registerServerStatusRoutes,
 } from './lib/opencode/core-routes.js';
 import { registerOpenChamberRoutes } from './lib/opencode/openchamber-routes.js';
+import { createMcDashboardRuntime } from './lib/mc-dashboard/runtime.js';
 import { createServerUtilsRuntime } from './lib/opencode/server-utils-runtime.js';
 import { createStaticRoutesRuntime } from './lib/opencode/static-routes-runtime.js';
 import { createSettingsRuntime } from './lib/opencode/settings-runtime.js';
@@ -1935,6 +1936,10 @@ async function main(options = {}) {
     fsPromises,
     spawn,
     resolveGitBinaryForSpawn,
+    mcDashboardRuntime: createMcDashboardRuntime({
+      env: process.env,
+      homedir: () => os.homedir(),
+    }),
     createFsSearchRuntime: createFsSearchRuntimeFactory,
     openchamberDataDir: OPENCHAMBER_DATA_DIR,
     openchamberUserConfigRoot: OPENCHAMBER_USER_CONFIG_ROOT,
