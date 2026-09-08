@@ -159,11 +159,9 @@ export const MagicContextPage: React.FC = () => {
     const query = search.trim();
     const timer = setTimeout(async () => {
       try {
-        const params: { limit: number; search?: string } = { limit: PAGE_SIZE };
-        if (query.length > 0) {
-          params.search = query;
-        }
-        const memories = await mcApi.fetchMemories(params);
+        const memories = query.length > 0
+          ? await mcApi.fetchMemories({ limit: PAGE_SIZE, search: query })
+          : await mcApi.fetchMemories({ limit: PAGE_SIZE });
         if ('gated' in memories) {
           return;
         }
