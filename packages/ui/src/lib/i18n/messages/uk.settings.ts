@@ -2283,4 +2283,13 @@ export const settingsDict = {
   ...linearIntegrationI18n.uk,
   'settings.page.integrations.title': 'Інтеграції',
   'settings.page.integrations.description': 'Підключіть GitHub і Linear, щоб OpenChamber міг працювати з вашими задачами та pull request-ами.',
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': 'Лише перегляд даних плагіна Magic Context керованого OpenCode на цьому компʼютері.',
+  'settings.magicContext.loading': 'Завантаження даних Magic Context…',
+  'settings.magicContext.loadError': 'Не вдалося завантажити дані Magic Context.',
+  'settings.magicContext.retry': 'Повторити',
+  'settings.magicContext.empty': 'Записів памʼяті ще немає.',
+  'settings.magicContext.gate.missingDb': 'Даних Magic Context не знайдено. Установіть і увімкніть плагін magic-context у керованому OpenCode, а потім почніть сеанс.',
+  'settings.magicContext.gate.schemaTooNew': 'Ці дані Magic Context записав новіший плагін: схему {schemaVersion} перевищено, підтримується до {maxSupportedSchema} (плагін {targetMcVersion} або старіший). Знизьте версію плагіна або оновіть цю збірку.',
+  'settings.magicContext.gate.unavailable': 'Дані Magic Context недоступні в цьому середовищі ({reason}).',
 } as const;

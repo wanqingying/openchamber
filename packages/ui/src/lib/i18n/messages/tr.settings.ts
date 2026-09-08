@@ -2273,4 +2273,13 @@ export const settingsDict = {
   'settings.page.integrations.title': 'Entegrasyonlar',
   'settings.page.integrations.description': 'OpenChamber’ın issue’lar ve pull request’lerle çalışabilmesi için GitHub ve Linear’ı bağlayın.',
   ...linearIntegrationI18n.tr,
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': 'Bu makinedeki yönetilen OpenCode için Magic Context eklentisi verilerinin salt okunur görünümü.',
+  'settings.magicContext.loading': 'Magic Context verileri yükleniyor…',
+  'settings.magicContext.loadError': 'Magic Context verileri yüklenemedi.',
+  'settings.magicContext.retry': 'Yeniden dene',
+  'settings.magicContext.empty': 'Henüz kaydedilmiş anı yok.',
+  'settings.magicContext.gate.missingDb': 'Magic Context verisi bulunamadı. Yönetilen OpenCode içinde magic-context eklentisini kurun ve etkinleştirin, ardından bir oturum başlatın.',
+  'settings.magicContext.gate.schemaTooNew': 'Bu Magic Context verileri daha yeni bir eklenti tarafından yazılmış: {schemaVersion} şeması desteklenen {maxSupportedSchema} değerini aşıyor (eklenti {targetMcVersion} veya daha eski). Eklentiyi düşürün veya bu derlemeyi güncelleyin.',
+  'settings.magicContext.gate.unavailable': 'Magic Context verileri bu ortamda kullanılamıyor ({reason}).',
 };

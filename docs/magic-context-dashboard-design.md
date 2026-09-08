@@ -109,7 +109,8 @@
 ## 6. UI 设计要点（packages/ui）
 
 - typed MC client 走 `runtimeFetch` + runtime 探测；无服务器 runtime（VS Code bridge）与无本机库 runtime（mobile 远程）→ 入口隐藏或不可用。
-- 挂载：顶级视图/工作区页签（不塞 Settings 分节），复用 layout 原语与设计令牌。
+- 挂载（M3 落地形态）：**Settings 新页**，slug `magic-context`（group general），复用 `SettingsPageLayout`/`SettingsSection` 原语；导航/搜索经 `metadata.ts` slug 与 `search.ts` 注册进入。完整独立顶级视图留作后续可选演进。
+- 文案遵循 locale-ui-patterns：9 条可见文案已同步进全部 12 语言字典（含真实翻译），由 `messages.test.ts` 保证键集一致。
 - 载荷纪律沿用 dashboard 教训：sessions 分页、会话消息惰性、cache 事件封顶、log 有界尾随。
 - 面板惰性加载；空态 ≠ 错误墙。
 
@@ -117,7 +118,7 @@
 
 - **M1（完成）**：`lib/mc-dashboard/` 只读底座 + `meta` 门控（paths / sqlite / runtime / routes / DOCUMENTATION）+ 接线 `index.js`+`feature-routes-runtime.js`；vitest 全绿、oxlint 干净。
 - **M2（完成）**：`queries/` 首个数据面。实现中确认会话列表读的是 OpenCode 自身库（`~/.local/share/opencode/opencode.db`）而非 `context.db`，故首条数据链改为 context.db 属主的 **memories 列表**（分页/过滤/摘要，只读）；`GET /api/openchamber/mc/memories` 已通。会话检视面（含 compartments/facts/notes）需要另外解析 OpenCode 库路径，单独立项（M2b）。
-- **M3**：UI typed client + 入口 gating（消费 `meta`）+ 首批面板。
+- **M3（完成）**：UI typed client（zod 边界 + DI）+ Settings 新页 `magic-context`（meta 门控态渲染 + memories 只读列表 + 全部 12 语言文案）。余下面板在 M4 逐个扩展。
 - **M4**：剩余面板逐个 + 容器内联验证 + 文档收尾。
 - 后续维护：mc 升版本 = 改 `runtime.js` 里 `MC_TARGET_VERSION`/`MC_MAX_SUPPORTED_SCHEMA` 并在 `queries/` 对照新源码差量更新 → 旧库与新阈值仍由门控兜底。
 

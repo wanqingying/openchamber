@@ -2283,4 +2283,13 @@ export const settingsDict = {
   ...linearIntegrationI18n.ko,
   'settings.page.integrations.title': '통합',
   'settings.page.integrations.description': 'GitHub와 Linear를 연결하면 OpenChamber가 이슈와 풀 리퀘스트를 다룰 수 있습니다.',
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': '이 머신의 관리 대상 OpenCode에 있는 Magic Context 플러그인 데이터를 읽기 전용으로 봅니다.',
+  'settings.magicContext.loading': 'Magic Context 데이터를 불러오는 중…',
+  'settings.magicContext.loadError': 'Magic Context 데이터를 불러올 수 없습니다.',
+  'settings.magicContext.retry': '다시 시도',
+  'settings.magicContext.empty': '아직 기록된 메모리가 없습니다.',
+  'settings.magicContext.gate.missingDb': 'Magic Context 데이터가 없습니다. 관리 대상 OpenCode에 magic-context 플러그인을 설치하고 활성화한 다음 세션을 시작하세요.',
+  'settings.magicContext.gate.schemaTooNew': '이 Magic Context 데이터는 더 새로운 플러그인으로 작성되었습니다: 스키마 {schemaVersion}가 지원 한도 {maxSupportedSchema}를 초과합니다(플러그인 {targetMcVersion} 이하). 플러그인을 낮추거나 이 빌드를 업데이트하세요.',
+  'settings.magicContext.gate.unavailable': '이 환경에서는 Magic Context 데이터를 사용할 수 없습니다({reason}).',
 } as const;

@@ -2273,4 +2273,13 @@ export const settingsDict = {
   ...linearIntegrationI18n.en,
   'settings.page.integrations.title': 'Integrations',
   'settings.page.integrations.description': 'Connect GitHub and Linear so OpenChamber can work with your issues and pull requests.',
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': 'Read-only view of the Magic Context plugin data for the managed OpenCode on this machine.',
+  'settings.magicContext.loading': 'Loading Magic Context data…',
+  'settings.magicContext.loadError': 'Could not load Magic Context data.',
+  'settings.magicContext.retry': 'Retry',
+  'settings.magicContext.empty': 'No memories recorded yet.',
+  'settings.magicContext.gate.missingDb': 'No Magic Context data found. Install and enable the magic-context plugin in the managed OpenCode, then start a session.',
+  'settings.magicContext.gate.schemaTooNew': 'This Magic Context data was written by a newer plugin: schema {schemaVersion} is above the supported {maxSupportedSchema} (plugin {targetMcVersion} or older). Downgrade the plugin or update this build.',
+  'settings.magicContext.gate.unavailable': 'Magic Context data is unavailable in this environment ({reason}).',
 } as const;

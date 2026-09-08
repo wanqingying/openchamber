@@ -8,6 +8,7 @@ export type SettingsPageSlug =
   | 'remote-instances'
   | 'providers'
   | 'usage'
+  | 'magic-context'
   | 'agents'
   | 'behavior'
   | 'commands'
@@ -95,6 +96,13 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     group: 'general',
     kind: 'split',
     keywords: ['quota', 'billing', 'tokens', 'usage', 'limits'],
+  },
+  {
+    slug: 'magic-context',
+    title: 'Magic Context',
+    group: 'general',
+    kind: 'single',
+    keywords: ['magic context', 'memory', 'memories', 'context', 'mc', 'dashboard', 'plugin'],
   },
   {
     slug: 'agents',

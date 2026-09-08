@@ -2283,4 +2283,13 @@ export const settingsDict = {
   ...linearIntegrationI18n.ja,
   'settings.page.integrations.title': '連携',
   'settings.page.integrations.description': 'GitHub と Linear を接続すると、OpenChamber が Issue やプルリクエストを扱えるようになります。',
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': 'このマシンの管理対象 OpenCode における Magic Context プラグインのデータを読み取り専用で表示します。',
+  'settings.magicContext.loading': 'Magic Context データを読み込み中…',
+  'settings.magicContext.loadError': 'Magic Context データを読み込めませんでした。',
+  'settings.magicContext.retry': '再試行',
+  'settings.magicContext.empty': '記録されたメモリはまだありません。',
+  'settings.magicContext.gate.missingDb': 'Magic Context データが見つかりません。管理対象の OpenCode に magic-context プラグインをインストールして有効にし、セッションを開始してください。',
+  'settings.magicContext.gate.schemaTooNew': 'この Magic Context データは新しいプラグインで書き込まれました: スキーマ {schemaVersion} は対応上限 {maxSupportedSchema} を超えています（プラグイン {targetMcVersion} 以下）。プラグインをダウングレードするか、このビルドを更新してください。',
+  'settings.magicContext.gate.unavailable': 'この環境では Magic Context データを利用できません（{reason}）。',
 } as const;

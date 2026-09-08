@@ -35,6 +35,7 @@ import { ProvidersSidebar } from '@/components/sections/providers/ProvidersSideb
 import { ProvidersPage } from '@/components/sections/providers/ProvidersPage';
 import { UsageSidebar } from '@/components/sections/usage/UsageSidebar';
 import { UsagePage } from '@/components/sections/usage/UsagePage';
+import { MagicContextPage } from '@/components/sections/magic-context/MagicContextPage';
 import { MagicPromptsSidebar } from '@/components/sections/magic-prompts/MagicPromptsSidebar';
 import { MagicPromptsPage } from '@/components/sections/magic-prompts/MagicPromptsPage';
 import { SnippetsSidebar } from '@/components/sections/snippets/SnippetsSidebar';
@@ -103,6 +104,7 @@ const pageOrder: SettingsPageSlug[] = [
   'voice',
   'integrations',
   'usage',
+  'magic-context',
   'about',
   // 'projects' group — Workspace
   'projects',
@@ -340,6 +342,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return t('settings.page.providers.title');
       case 'usage':
         return t('settings.page.usage.title');
+      case 'magic-context':
+        return t('settings.page.magicContext.title');
       case 'agents':
         return t('settings.page.agents.title');
       case 'behavior':
@@ -649,6 +653,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return <ProvidersPage />;
       case 'usage':
         return <UsagePage />;
+      case 'magic-context':
+        return <MagicContextPage />;
       case 'about':
         return (
           <SettingsPageLayout title={t('settings.page.about.title')} showSaveStatus={false}>

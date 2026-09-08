@@ -33,6 +33,13 @@ interface SettingsSearchAvailabilityContext extends SettingsRuntimeContext {
 
 const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
   {
+    id: 'magic-context.page',
+    page: 'magic-context',
+    titleKey: 'settings.page.magicContext.title',
+    descriptionKey: 'settings.magicContext.description',
+    keywords: ['magic context', 'memories', 'memory', 'context', 'mc', 'dashboard', 'plugin'],
+  },
+  {
     id: 'appearance.language',
     page: 'appearance',
     titleKey: 'settings.appearance.language.label',

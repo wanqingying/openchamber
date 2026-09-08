@@ -2283,4 +2283,13 @@ export const settingsDict = {
   ...linearIntegrationI18n['zh-CN'],
   'settings.page.integrations.title': '集成',
   'settings.page.integrations.description': '连接 GitHub 和 Linear，让 OpenChamber 可以处理你的 issue 和拉取请求。',
+  'settings.page.magicContext.title': 'Magic Context',
+  'settings.magicContext.description': '本机受管 OpenCode 中 Magic Context 插件数据的只读检视。',
+  'settings.magicContext.loading': '正在加载 Magic Context 数据…',
+  'settings.magicContext.loadError': 'Magic Context 数据加载失败。',
+  'settings.magicContext.retry': '重试',
+  'settings.magicContext.empty': '还没有记录任何记忆。',
+  'settings.magicContext.gate.missingDb': '未找到 Magic Context 数据。请先在受管 OpenCode 中安装并启用 magic-context 插件，然后开始一个会话。',
+  'settings.magicContext.gate.schemaTooNew': '这份 Magic Context 数据由更新的插件写入：schema {schemaVersion} 超出支持上限 {maxSupportedSchema}（插件 {targetMcVersion} 或更早）。请降级插件或升级本版本。',
+  'settings.magicContext.gate.unavailable': '此环境下 Magic Context 数据不可用（{reason}）。',
 } as const;
