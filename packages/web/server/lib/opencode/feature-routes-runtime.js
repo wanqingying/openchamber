@@ -149,7 +149,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerPermissionAutoAcceptRoutes(app, permissionAutoAcceptRuntime);
     registerMessageQueueRoutes(app, messageQueueRuntime);
 
-    registerMcDashboardRoutes(app, mcDashboardRuntime);
+    registerMcDashboardRoutes(app, { runtime: mcDashboardRuntime });
 
     registerOpenCodeRoutes(app, {
       crypto,

@@ -1,3 +1,6 @@
+// Read-only queries authored from the pinned plugin source
+// magic-context v0.41.4 (storage-db.ts memories DDL + dashboard db.rs list
+// semantics). Update together when MC_TARGET_VERSION advances.
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 500;
 const EXCERPT_LENGTH = 240;

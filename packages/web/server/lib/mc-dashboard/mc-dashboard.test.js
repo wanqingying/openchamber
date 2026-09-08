@@ -393,8 +393,8 @@ describe('overview', () => {
       `);
       const insert = db.prepare('INSERT INTO memories (project_path, category, content, status) VALUES (?, ?, ?, ?)');
       insert.run('/p1', 'work', 'a', 'active');
-      insert.run('/p1', 'work', 'b', 'archived');
-      insert.run('/p2', 'personal', 'c', 'active');
+      insert.run('/p1', 'work', 'b', 'permanent');
+      insert.run('/p2', 'personal', 'c', 'archived');
     } finally {
       opened.db.close();
     }
@@ -406,7 +406,7 @@ describe('overview', () => {
     expect(result.ok).toBe(true);
     expect(result.data).toEqual({
       totalMemories: 3,
-      activeMemories: 2,
+      currentMemories: 2,
       projects: 2,
       categories: 2,
     });
