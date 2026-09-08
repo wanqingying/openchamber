@@ -411,17 +411,149 @@ describe('overview', () => {
       categories: 2,
     });
   });
+});
 
-  it('returns the gating payload when the database is missing', async () => {
-    const storageDir = makeTempDir();
-    const runtime = createMcDashboardRuntime({
-      env: { MAGIC_CONTEXT_STORAGE_DIR: storageDir },
+describe('extended surfaces', () => {
+  const createRuntimeFor = (env) =>
+    createMcDashboardRuntime({
+      env,
       homedir: () => '/home/tester',
+      tmpdir: () => '/tmp',
     });
-    const result = await runtime.overview();
+
+  const seedContextWith = async (storageDir, setup) => {
+    const dbPath = path.join(storageDir, 'context.db');
+    const opened = await openMagicContextDatabaseForWrite({ dbPath });
+    expect(opened.ok).toBe(true);
+    try {
+      setup(opened.db);
+    } finally {
+      opened.db.close();
+    }
+  };
+
+  const seedOpencodeDb = async (xdgHome) => {
+    const dir = path.join(xdgHome, 'opencode');
+    fs.mkdirSync(dir, { recursive: true });
+    const dbPath = path.join(dir, 'opencode.db');
+    const opened = await openMagicContextDatabaseForWrite({ dbPath });
+    expect(opened.ok).toBe(true);
+    try {
+      const db = opened.db;
+      db.exec(`
+        CREATE TABLE project (id TEXT PRIMARY KEY, name TEXT NOT NULL, worktree TEXT);
+        CREATE TABLE session (
+          id TEXT PRIMARY KEY,
+          title TEXT,
+          directory TEXT,
+          time_updated INTEGER NOT NULL,
+          time_archived INTEGER,
+          project_id TEXT
+        );
+      `);
+      db.prepare('INSERT INTO project (id, name, worktree) VALUES (?, ?, ?)').run('p1', 'Demo', 'main');
+      db.prepare('INSERT INTO session (id, title, directory, time_updated, time_archived, project_id) VALUES (?, ?, ?, ?, ?, ?)').run('s1', 'Chat about sqlite', '/p1', 300, null, 'p1');
+      db.prepare('INSERT INTO session (id, title, directory, time_updated, time_archived, project_id) VALUES (?, ?, ?, ?, ?, ?)').run('s2', 'Archived one', '/p2', 100, 1, null);
+    } finally {
+      opened.db.close();
+    }
+  };
+
+  it('lists sessions from the opencode database', async () => {
+    const xdgHome = makeTempDir();
+    await seedOpencodeDb(xdgHome);
+    const runtime = createRuntimeFor({ XDG_DATA_HOME: xdgHome });
+    const result = await runtime.listSessions({});
+    expect(result.ok).toBe(true);
+    expect(result.data.total).toBe(1);
+    expect(result.data.items[0]).toMatchObject({
+      id: 's1',
+      title: 'Chat about sqlite',
+      projectName: 'Demo',
+      directory: '/p1',
+      lastActivity: 300,
+    });
+  });
+
+  it('reports missing-opencode-db when the opencode database is absent', async () => {
+    const runtime = createRuntimeFor({ XDG_DATA_HOME: makeTempDir() });
+    const result = await runtime.listSessions({});
     expect(result.ok).toBeUndefined();
     expect(result.available).toBe(false);
-    expect(result.reason).toBe(MC_UNAVAILABLE_MISSING_DB);
+    expect(result.reason).toBe('missing-opencode-db');
+  });
+
+  it('reads session insight, dream runs, primers and user memories from context.db', async () => {
+    const storageDir = makeTempDir();
+    await seedContextWith(storageDir, (db) => {
+      db.exec(`
+        CREATE TABLE session_meta (
+          session_id TEXT PRIMARY KEY, harness TEXT, is_subagent INTEGER,
+          last_response_time INTEGER, last_input_tokens INTEGER,
+          system_prompt_tokens INTEGER, total_input_tokens INTEGER,
+          cached_m0_bytes INTEGER, memory_block_count INTEGER,
+          memory_block_cache INTEGER, conversation_tokens INTEGER,
+          tool_call_tokens INTEGER, last_usage_context_limit INTEGER,
+          last_context_percentage INTEGER
+        );
+        CREATE TABLE session_facts (id INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT NOT NULL, category TEXT, content TEXT NOT NULL, created_at INTEGER, updated_at INTEGER);
+        CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT DEFAULT 'session', status TEXT DEFAULT 'active', content TEXT, session_id TEXT, project_path TEXT, created_at INTEGER, updated_at INTEGER, ready_at INTEGER);
+        CREATE TABLE compartments (session_id TEXT NOT NULL, sequence INTEGER NOT NULL, created_at INTEGER);
+        CREATE TABLE dream_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, project_path TEXT NOT NULL, started_at INTEGER, finished_at INTEGER, tasks_succeeded INTEGER, tasks_failed INTEGER, smart_notes_surfaced INTEGER, smart_notes_pending INTEGER, parent_session_id TEXT);
+        CREATE TABLE primers (id INTEGER PRIMARY KEY AUTOINCREMENT, project_path TEXT NOT NULL, question TEXT NOT NULL, answer TEXT, status TEXT DEFAULT 'active', total_support INTEGER, last_observed_at INTEGER, created_at INTEGER, updated_at INTEGER);
+        CREATE TABLE user_memories (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT NOT NULL, status TEXT DEFAULT 'active', promoted_at INTEGER, created_at INTEGER, updated_at INTEGER);
+      `);
+      db.prepare('INSERT INTO session_meta (session_id, harness, last_input_tokens, is_subagent, last_response_time) VALUES (?, ?, ?, ?, ?)').run('s1', 'opencode', 1200, 0, 500);      db.prepare('INSERT INTO session_facts (session_id, category, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)').run('s1', 'CONFIG_VALUES', 'fact one', 1, 1);
+      db.prepare('INSERT INTO notes (session_id, type, status, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)').run('s1', 'session', 'active', 'note one', 2, 2);
+      db.prepare('INSERT INTO compartments (session_id, sequence, created_at) VALUES (?, ?, ?)').run('s1', 1, 3);
+      db.prepare('INSERT INTO dream_runs (project_path, started_at, finished_at, tasks_succeeded, tasks_failed, smart_notes_surfaced, smart_notes_pending) VALUES (?, ?, ?, ?, ?, ?, ?)').run('/p1', 10, 20, 3, 1, 2, 0);
+      db.prepare('INSERT INTO primers (project_path, question, answer, status, total_support, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)').run('/p1', 'q?', 'a', 'active', 5, 1, 2);
+      db.prepare('INSERT INTO user_memories (content, status, promoted_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?)').run('keep this', 'active', 5, 4, 4);
+    });
+    const runtime = createRuntimeFor({ MAGIC_CONTEXT_STORAGE_DIR: storageDir });
+
+    const insight = await runtime.getSessionInsight('s1');
+    expect(insight.ok).toBe(true);
+    expect(insight.data.meta.harness).toBe('opencode');
+    expect(insight.data.meta.lastInputTokens).toBe(1200);
+    expect(insight.data.factCount).toBe(1);
+    expect(insight.data.noteCount).toBe(1);
+    expect(insight.data.compartmentCount).toBe(1);
+    expect(insight.data.compartments[0].sequence).toBe(1);
+
+    const runs = await runtime.listDreamRuns({});
+    expect(runs.data.total).toBe(1);
+    expect(runs.data.items[0].tasksSucceeded).toBe(3);
+
+    const primers = await runtime.listPrimers({});
+    expect(primers.data.items[0].question).toBe('q?');
+
+    const memories = await runtime.listUserMemories({});
+    expect(memories.data.items[0].content).toBe('keep this');
+  });
+
+  it('reads config and log file previews', async () => {
+    const root = makeTempDir();
+    fs.mkdirSync(path.join(root, 'cortexkit'), { recursive: true });
+    fs.mkdirSync(path.join(root, 'opencode', 'magic-context'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'cortexkit', 'magic-context.jsonc'), '// config\n{"enabled": true}');
+    fs.writeFileSync(path.join(root, 'opencode', 'magic-context', 'magic-context.log'), 'line one\nline two');
+
+    const env = {
+      XDG_CONFIG_HOME: path.join(root, 'cfg'),
+      MAGIC_CONTEXT_LOG_PATH: path.join(root, 'opencode', 'magic-context', 'magic-context.log'),
+    };
+    const configDir = path.join(env.XDG_CONFIG_HOME, 'cortexkit');
+    fs.mkdirSync(configDir, { recursive: true });
+    fs.copyFileSync(path.join(root, 'cortexkit', 'magic-context.jsonc'), path.join(configDir, 'magic-context.jsonc'));
+
+    const runtime = createRuntimeFor(env);
+    const config = await runtime.readConfig();
+    expect(config.data.exists).toBe(true);
+    expect(config.data.content).toContain('"enabled": true');
+    const logs = await runtime.readLogs();
+    expect(logs.data.exists).toBe(true);
+    expect(logs.data.content).toContain('line two');
   });
 });
 

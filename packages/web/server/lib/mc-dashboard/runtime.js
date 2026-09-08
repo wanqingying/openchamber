@@ -3,6 +3,11 @@ import { openMagicContextDatabase } from './sqlite.js';
 import { listMemories } from './queries/memories.js';
 import { memoryOverview } from './queries/overview.js';
 import { listWorkspaces } from './queries/workspaces.js';
+import { listOpencodeSessions, resolveOpencodeDbPath } from './queries/opencode.js';
+import { sessionInsight } from './queries/session-insight.js';
+import { listDreamRuns } from './queries/dreamer.js';
+import { listPrimers, listUserMemories } from './queries/primers.js';
+import { readFilePreview, resolveMagicContextLogPath, resolveUserConfigPath } from './queries/files.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
 export const MC_MAX_SUPPORTED_SCHEMA = 84;
@@ -13,6 +18,7 @@ export const MC_UNAVAILABLE_SCHEMA_TOO_NEW = 'schema-too-new';
 export const MC_UNAVAILABLE_SQLITE = 'sqlite-unavailable';
 export const MC_UNAVAILABLE_OPEN_FAILED = 'open-failed';
 export const MC_UNAVAILABLE_STORAGE = 'storage-dir-unavailable';
+export const MC_UNAVAILABLE_NO_OPENCODE = 'missing-opencode-db';
 
 export const readPersistedSchemaVersion = (db) => {
   const table = db
@@ -81,17 +87,60 @@ export const openCheckedMagicContextDatabase = async ({ env, homedir }) => {
   return { ok: true, db: opened.db, dbPath, schemaVersion, ...meta };
 };
 
-export const createMcDashboardRuntime = ({ env, homedir }) => {
+const openSqlite = async (dbPath) => {
+  if (!dbPath) {
+    return { ok: false, code: MC_UNAVAILABLE_MISSING_DB };
+  }
+  if (!dbFileExists(dbPath)) {
+    return { ok: false, code: MC_UNAVAILABLE_MISSING_DB };
+  }
+  return openMagicContextDatabase({ dbPath });
+};
+
+const openOpencodeDb = async ({ env, homedir }) => {
+  const meta = identityMeta();
+  const dbPath = resolveOpencodeDbPath({ env, homedir });
+  if (!dbPath) {
+    return { ok: false, payload: { available: false, reason: MC_UNAVAILABLE_NO_OPENCODE, ...meta } };
+  }
+  const opened = await openSqlite(dbPath);
+  if (!opened.ok) {
+    return {
+      ok: false,
+      payload: {
+        available: false,
+        reason: opened.code === MC_UNAVAILABLE_SQLITE ? opened.code : opened.code === MC_UNAVAILABLE_MISSING_DB ? MC_UNAVAILABLE_NO_OPENCODE : MC_UNAVAILABLE_OPEN_FAILED,
+        detail: opened.detail ?? null,
+        ...meta,
+      },
+    };
+  }
+  return { ok: true, db: opened.db, dbPath };
+};
+
+const queryWithClose = async (handle, query) => {
+  try {
+    return { ok: true, data: query(handle.db) };
+  } finally {
+    handle.db.close();
+  }
+};
+
+export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }) => {
   const run = async (query) => {
     const opened = await openCheckedMagicContextDatabase({ env, homedir });
     if (!opened.ok) {
       return opened.payload;
     }
-    try {
-      return { ok: true, data: query(opened.db) };
-    } finally {
-      opened.db.close();
+    return queryWithClose(opened, query);
+  };
+
+  const listFromContext = (queryFn) => async (options) => {
+    const result = await run((db) => queryFn(db, options));
+    if (!result.ok) {
+      return result;
     }
+    return { ok: true, data: result.data };
   };
 
   const getMeta = async () => {
@@ -111,29 +160,43 @@ export const createMcDashboardRuntime = ({ env, homedir }) => {
     }
   };
 
-  const listMemoriesRoute = async (options) => {
-    const result = await run((db) => listMemories(db, options));
+  const listSessions = async (options) => {
+    const opened = await openOpencodeDb({ env, homedir });
+    if (!opened.ok) {
+      return opened.payload;
+    }
+    return queryWithClose(opened, (db) => listOpencodeSessions(db, options));
+  };
+
+  const getSessionInsight = async (sessionId) => {
+    const result = await run((db) => sessionInsight(db, sessionId));
     if (!result.ok) {
       return result;
     }
     return { ok: true, data: result.data };
   };
 
-  const overviewRoute = async () => {
-    const result = await run(memoryOverview);
-    if (!result.ok) {
-      return result;
-    }
-    return { ok: true, data: result.data };
+  const readConfig = async () => {
+    const filePath = resolveUserConfigPath({ env, homedir });
+    return { ok: true, data: readFilePreview(filePath) };
   };
 
-  const listWorkspacesRoute = async (options) => {
-    const result = await run((db) => listWorkspaces(db, options));
-    if (!result.ok) {
-      return result;
-    }
-    return { ok: true, data: result.data };
+  const readLogs = async () => {
+    const filePath = resolveMagicContextLogPath({ env, tmpdir });
+    return { ok: true, data: readFilePreview(filePath) };
   };
 
-  return { getMeta, listMemories: listMemoriesRoute, overview: overviewRoute, listWorkspaces: listWorkspacesRoute };
+  return {
+    getMeta,
+    listMemories: listFromContext(listMemories),
+    overview: listFromContext((db) => memoryOverview(db)),
+    listWorkspaces: listFromContext(listWorkspaces),
+    listDreamRuns: listFromContext(listDreamRuns),
+    listPrimers: listFromContext(listPrimers),
+    listUserMemories: listFromContext(listUserMemories),
+    listSessions,
+    getSessionInsight,
+    readConfig,
+    readLogs,
+  };
 };
