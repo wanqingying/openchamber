@@ -66,6 +66,13 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       respondError(res, error);
     }
   });
+  app.get('/api/openchamber/mc/version', async (_req, res) => {
+    try {
+      respondResult(res, await runtime.getVersion());
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
   app.get('/api/openchamber/mc/memories', async (req, res) => {
     const parsed = parseLimitOffset(req);
     if (!parsed.ok) {

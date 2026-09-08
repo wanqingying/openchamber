@@ -14,6 +14,7 @@ import { readFilePreview, resolveMagicContextLogPath, resolveUserConfigPath } fr
 export const MC_TARGET_VERSION = '0.41.4';
 export const MC_MAX_SUPPORTED_SCHEMA = 83;
 export const MC_FORK_VERSION_FLOOR = 10000;
+export const MC_DASHBOARD_BUILD = 5;
 
 export const MC_UNAVAILABLE_MISSING_DB = 'missing-db';
 export const MC_UNAVAILABLE_SCHEMA_TOO_NEW = 'schema-too-new';
@@ -204,6 +205,8 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     return { ok: true, data: readFilePreview(filePath) };
   };
 
+  const getVersion = async () => ({ ok: true, data: { version: MC_DASHBOARD_BUILD } });
+
   return {
     getMeta,
     listMemories: listFromContext(listMemories),
@@ -220,6 +223,7 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     getSessionInsight,
     getDreamRun,
     getSessionCacheEvents,
+    getVersion,
     readConfig,
     readLogs,
   };
