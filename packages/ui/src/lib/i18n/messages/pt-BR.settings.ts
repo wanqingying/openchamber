@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': 'Configuração',
   'settings.magicContext.section.logs': 'Logs',
   'settings.magicContext.listEmpty': 'Nada por aqui ainda.',
+  'settings.magicContext.searchPlaceholder': 'Buscar memórias…',
 } as const;

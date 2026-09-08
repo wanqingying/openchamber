@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': '配置',
   'settings.magicContext.section.logs': '日志',
   'settings.magicContext.listEmpty': '这里还没有内容。',
+  'settings.magicContext.searchPlaceholder': '搜索记忆…',
 } as const;

@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': 'Configuration',
   'settings.magicContext.section.logs': 'Journaux',
   'settings.magicContext.listEmpty': 'Rien ici pour le moment.',
+  'settings.magicContext.searchPlaceholder': 'Rechercher des souvenirs…',
 } as const;

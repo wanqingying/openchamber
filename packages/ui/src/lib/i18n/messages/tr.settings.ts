@@ -2297,4 +2297,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': 'Yapılandırma',
   'settings.magicContext.section.logs': 'Günlükler',
   'settings.magicContext.listEmpty': 'Henüz burada bir şey yok.',
+  'settings.magicContext.searchPlaceholder': 'Anı ara…',
 };

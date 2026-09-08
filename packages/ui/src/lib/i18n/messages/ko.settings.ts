@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': '설정',
   'settings.magicContext.section.logs': '로그',
   'settings.magicContext.listEmpty': '아직 아무것도 없습니다.',
+  'settings.magicContext.searchPlaceholder': '메모리 검색…',
 } as const;

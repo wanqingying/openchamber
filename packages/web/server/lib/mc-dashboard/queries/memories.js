@@ -40,7 +40,7 @@ const toCamel = (row) => ({
   verificationStatus: row.verification_status ?? null,
 });
 
-export const listMemories = (db, { projectPath, category, status, limit = DEFAULT_LIMIT, offset = 0 } = {}) => {
+export const listMemories = (db, { projectPath, category, status, search, limit = DEFAULT_LIMIT, offset = 0 } = {}) => {
   const where = [];
   const bind = [];
   if (projectPath !== undefined) {
@@ -54,6 +54,11 @@ export const listMemories = (db, { projectPath, category, status, limit = DEFAUL
   if (status !== undefined) {
     where.push('status = ?');
     bind.push(status);
+  }
+  if (search !== undefined && search.length > 0) {
+    where.push('(content LIKE ? OR category LIKE ?)');
+    const pattern = `%${search}%`;
+    bind.push(pattern, pattern);
   }
   const clause = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
 

@@ -316,6 +316,16 @@ describe('memories', () => {
     expect(result.data.items.map((item) => item.contentExcerpt).sort()).toEqual(['a', 'c']);
   });
 
+  it('filters memories by a search term', async () => {
+    const storageDir = await seedStorage([
+      { projectPath: '/p', category: 'work', content: 'sqlite query details here', createdAt: 100 },
+      { projectPath: '/p', category: 'work', content: 'unrelated note', createdAt: 200 },
+    ]);
+    const result = await makeRuntime(storageDir).listMemories({ search: 'sqlite' });
+    expect(result.data.total).toBe(1);
+    expect(result.data.items[0].contentExcerpt).toBe('sqlite query details here');
+  });
+
   it('pages with limit and offset', async () => {
     const storageDir = await seedStorage([
       { projectPath: '/p', category: 'work', content: 'c1', createdAt: 100 },

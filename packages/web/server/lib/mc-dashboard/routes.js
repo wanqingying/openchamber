@@ -75,6 +75,7 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
     parsed.options.projectPath = readSingleQueryValue(req.query.project);
     parsed.options.category = readSingleQueryValue(req.query.category);
     parsed.options.status = readSingleQueryValue(req.query.status);
+    parsed.options.search = readSingleQueryValue(req.query.search);
     try {
       respondResult(res, await runtime.listMemories(parsed.options));
     } catch (error) {

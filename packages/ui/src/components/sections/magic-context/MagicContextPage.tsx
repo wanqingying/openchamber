@@ -77,6 +77,7 @@ export const MagicContextPage: React.FC = () => {
     logs: null,
   });
   const [loadMoreError, setLoadMoreError] = React.useState(false);
+  const [search, setSearch] = React.useState('');
 
   const loadPanels = React.useCallback(async () => {
     const [sessions, dreams, primers, userMemories, workspaces, config, logs] = await Promise.allSettled([
@@ -150,6 +151,31 @@ export const MagicContextPage: React.FC = () => {
       setLoadMoreError(true);
     }
   }, [items.length]);
+
+  React.useEffect(() => {
+    if (view.status !== 'ready') {
+      return;
+    }
+    const query = search.trim();
+    const timer = setTimeout(async () => {
+      try {
+        const params: { limit: number; search?: string } = { limit: PAGE_SIZE };
+        if (query.length > 0) {
+          params.search = query;
+        }
+        const memories = await mcApi.fetchMemories(params);
+        if ('gated' in memories) {
+          return;
+        }
+        setItems(memories.items);
+        setTotal(memories.total);
+        setLoadMoreError(false);
+      } catch {
+        setLoadMoreError(true);
+      }
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [search, view.status]);
 
   const renderGate = (view: Extract<View, { status: 'gated' }>) => {
     if (view.reason === 'missing-db') {
@@ -325,9 +351,13 @@ export const MagicContextPage: React.FC = () => {
             <p className="typography-body text-muted-foreground">{t('settings.magicContext.empty')}</p>
           ) : (
             <div className="space-y-3">
-              <p className="typography-caption text-muted-foreground">
-                {t('settings.magicContext.shownOfTotal', { shown: String(items.length), total: String(total) })}
-              </p>
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t('settings.magicContext.searchPlaceholder')}
+                className="w-full max-w-sm rounded border border-border bg-transparent px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary"
+              />
               <ul className="space-y-4">
                 {items.map((item) => (
                   <li key={item.id} className="space-y-1">
@@ -338,14 +368,19 @@ export const MagicContextPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              {items.length < total ? (
-                <div className="flex flex-col items-start gap-2">
-                  {loadMoreError ? (
-                    <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
-                  ) : null}
-                  <Button variant="secondary" size="sm" onClick={loadMore}>{t('settings.magicContext.loadMore')}</Button>
-                </div>
-              ) : null}
+              <div className="flex flex-col items-start gap-2 pt-1">
+                <p className="typography-caption text-muted-foreground">
+                  {t('settings.magicContext.shownOfTotal', { shown: String(items.length), total: String(total) })}
+                </p>
+                {items.length < total ? (
+                  <>
+                    {loadMoreError ? (
+                      <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
+                    ) : null}
+                    <Button variant="secondary" size="sm" onClick={loadMore}>{t('settings.magicContext.loadMore')}</Button>
+                  </>
+                ) : null}
+              </div>
             </div>
           )}
         </SettingsSection>

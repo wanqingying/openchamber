@@ -2298,4 +2298,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': 'Konfiguration',
   'settings.magicContext.section.logs': 'Logs',
   'settings.magicContext.listEmpty': 'Noch nichts vorhanden.',
+  'settings.magicContext.searchPlaceholder': 'Erinnerungen durchsuchen…',
 };

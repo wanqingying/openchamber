@@ -123,6 +123,7 @@ export interface McMemoriesOptions {
   projectPath?: string;
   category?: string;
   status?: string;
+  search?: string;
   limit?: number;
   offset?: number;
 }
@@ -383,6 +384,7 @@ export const createMcApi = (fetcher: McFetcher) => {
       ['project', options.projectPath],
       ['category', options.category],
       ['status', options.status],
+      ['search', options.search],
       ['limit', options.limit],
       ['offset', options.offset],
     ];

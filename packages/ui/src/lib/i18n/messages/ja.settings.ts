@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': '設定',
   'settings.magicContext.section.logs': 'ログ',
   'settings.magicContext.listEmpty': 'まだ何もありません。',
+  'settings.magicContext.searchPlaceholder': 'メモリを検索…',
 } as const;

@@ -2307,4 +2307,5 @@ export const settingsDict = {
   'settings.magicContext.section.config': 'Конфігурація',
   'settings.magicContext.section.logs': 'Журнали',
   'settings.magicContext.listEmpty': 'Поки що тут нічого немає.',
+  'settings.magicContext.searchPlaceholder': 'Пошук памʼяті…',
 } as const;
