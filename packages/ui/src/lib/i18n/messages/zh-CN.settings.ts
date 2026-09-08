@@ -2299,4 +2299,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': '当前有效',
   'settings.magicContext.stat.projects': '项目',
   'settings.magicContext.stat.categories': '类别',
+  'settings.magicContext.section.sessions': '会话',
+  'settings.magicContext.section.dreamer': '调度器',
+  'settings.magicContext.section.primers': '提示词',
+  'settings.magicContext.section.userMemories': '用户记忆',
+  'settings.magicContext.section.workspaces': '工作区',
+  'settings.magicContext.section.config': '配置',
+  'settings.magicContext.section.logs': '日志',
+  'settings.magicContext.listEmpty': '这里还没有内容。',
 } as const;

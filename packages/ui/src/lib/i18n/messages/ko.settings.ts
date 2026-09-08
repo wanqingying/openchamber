@@ -2299,4 +2299,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': '현재 사용 중',
   'settings.magicContext.stat.projects': '프로젝트',
   'settings.magicContext.stat.categories': '카테고리',
+  'settings.magicContext.section.sessions': '세션',
+  'settings.magicContext.section.dreamer': '드리머',
+  'settings.magicContext.section.primers': '프라이머',
+  'settings.magicContext.section.userMemories': '사용자 메모리',
+  'settings.magicContext.section.workspaces': '워크스페이스',
+  'settings.magicContext.section.config': '설정',
+  'settings.magicContext.section.logs': '로그',
+  'settings.magicContext.listEmpty': '아직 아무것도 없습니다.',
 } as const;

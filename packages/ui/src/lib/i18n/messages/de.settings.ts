@@ -2290,4 +2290,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': 'Aktuell nutzbar',
   'settings.magicContext.stat.projects': 'Projekte',
   'settings.magicContext.stat.categories': 'Kategorien',
+  'settings.magicContext.section.sessions': 'Sitzungen',
+  'settings.magicContext.section.dreamer': 'Dreamer',
+  'settings.magicContext.section.primers': 'Primer',
+  'settings.magicContext.section.userMemories': 'Benutzererinnerungen',
+  'settings.magicContext.section.workspaces': 'Arbeitsbereiche',
+  'settings.magicContext.section.config': 'Konfiguration',
+  'settings.magicContext.section.logs': 'Logs',
+  'settings.magicContext.listEmpty': 'Noch nichts vorhanden.',
 };

@@ -7,7 +7,8 @@ export type McGateReason =
   | 'schema-too-new'
   | 'sqlite-unavailable'
   | 'open-failed'
-  | 'storage-dir-unavailable';
+  | 'storage-dir-unavailable'
+  | 'missing-opencode-db';
 
 export interface McGated {
   gated: true;
@@ -54,6 +55,70 @@ export interface McOverview {
   categories: number;
 }
 
+export interface McSession {
+  id: string;
+  title: string;
+  projectName: string;
+  worktree: string;
+  directory: string;
+  lastActivity: number;
+}
+
+export interface McDreamRun {
+  id: number;
+  projectPath: string;
+  startedAt: number | null;
+  finishedAt: number | null;
+  tasksSucceeded: number | null;
+  tasksFailed: number | null;
+  smartNotesSurfaced: number | null;
+  smartNotesPending: number | null;
+}
+
+export interface McPrimer {
+  id: number;
+  projectPath: string;
+  question: string;
+  answer: string | null;
+  status: string;
+  totalSupport: number | null;
+  lastObservedAt: number | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface McUserMemory {
+  id: number;
+  content: string;
+  status: string;
+  promotedAt: number | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface McWorkspace {
+  id: number;
+  name: string;
+  createdAt: number;
+  updatedAt: number;
+  shareCategories: string;
+  memberCount: number;
+}
+
+export interface McPage<T> {
+  total: number;
+  limit: number;
+  offset: number;
+  items: T[];
+}
+
+export interface McFilePreview {
+  exists: boolean;
+  path: string;
+  sizeBytes: number;
+  content: string;
+}
+
 export interface McMemoriesOptions {
   projectPath?: string;
   category?: string;
@@ -79,6 +144,7 @@ const gateReasonSchema = z.enum([
   'sqlite-unavailable',
   'open-failed',
   'storage-dir-unavailable',
+  'missing-opencode-db',
 ]);
 
 const gatedSchema = z.object({
@@ -139,6 +205,72 @@ const overviewSchema = z.object({
   categories: z.number().int().nonnegative(),
 });
 
+const pageSchema = <T extends z.ZodTypeAny>(itemSchema: T) => z.object({
+  total: z.number().int().nonnegative(),
+  limit: z.number().int().positive().max(500),
+  offset: z.number().int().nonnegative(),
+  items: z.array(itemSchema),
+});
+
+const nullableInt = () => z.number().int().nonnegative().nullish().transform((value) => value ?? null);
+
+const sessionItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  projectName: z.string(),
+  worktree: z.string().optional().default(''),
+  directory: z.string().optional().default(''),
+  lastActivity: z.number().finite(),
+});
+
+const dreamRunItemSchema = z.object({
+  id: z.number().int(),
+  projectPath: z.string(),
+  startedAt: nullableInt(),
+  finishedAt: nullableInt(),
+  tasksSucceeded: nullableInt(),
+  tasksFailed: nullableInt(),
+  smartNotesSurfaced: nullableInt(),
+  smartNotesPending: nullableInt(),
+});
+
+const primerItemSchema = z.object({
+  id: z.number().int(),
+  projectPath: z.string(),
+  question: z.string(),
+  answer: z.string().nullish().transform((value) => value ?? null),
+  status: z.string(),
+  totalSupport: nullableInt(),
+  lastObservedAt: nullableInt(),
+  createdAt: z.number().finite(),
+  updatedAt: z.number().finite(),
+});
+
+const userMemoryItemSchema = z.object({
+  id: z.number().int(),
+  content: z.string(),
+  status: z.string(),
+  promotedAt: nullableInt(),
+  createdAt: z.number().finite(),
+  updatedAt: z.number().finite(),
+});
+
+const workspaceItemSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  createdAt: z.number().finite(),
+  updatedAt: z.number().finite(),
+  shareCategories: z.string(),
+  memberCount: z.number().int().nonnegative(),
+});
+
+const filePreviewSchema = z.object({
+  exists: z.boolean(),
+  path: z.string(),
+  sizeBytes: z.number().int().nonnegative(),
+  content: z.string(),
+});
+
 const errorPayloadSchema = z.object({
   error: z.string().optional(),
 });
@@ -191,6 +323,40 @@ const readErrorText = async (response: McHttpResponse): Promise<string> => {
 };
 
 export const createMcApi = (fetcher: McFetcher) => {
+  const requestText = async (path: string, message: string): Promise<string> => {
+    const response = await fetcher(path, { cache: 'no-store' });
+    if (!response.ok) {
+      const detail = await readErrorText(response);
+      throw new Error(detail || `Magic Context request failed (${response.status})`);
+    }
+    return response.text();
+  };
+
+  const readList = async <T>(path: string, itemSchema: z.ZodType<T>, message: string): Promise<McPage<T> | McGated> => {
+    const data = parseBody(z.union([pageSchema(itemSchema), gatedSchema]), await requestText(path, message), message);
+    if ('total' in data) {
+      return data;
+    }
+    return buildGated(data);
+  };
+
+  const listQuery = (options: McMemoriesOptions): string => {
+    const query = new URLSearchParams();
+    const entries: ReadonlyArray<readonly [string, string | number | undefined]> = [
+      ['project', options.projectPath],
+      ['category', options.category],
+      ['status', options.status],
+      ['limit', options.limit],
+      ['offset', options.offset],
+    ];
+    for (const [key, value] of entries) {
+      if (value !== undefined) {
+        query.set(key, String(value));
+      }
+    }
+    return query.size > 0 ? `?${query.toString()}` : '';
+  };
+
   const fetchMeta = async (options: { signal?: AbortSignal } = {}): Promise<McMeta | McGated> => {
     const response = await fetcher(`${BASE_PATH}/meta`, { cache: 'no-store', signal: options.signal });
     if (!response.ok) {
@@ -264,7 +430,43 @@ export const createMcApi = (fetcher: McFetcher) => {
     return buildGated(data);
   };
 
-  return { fetchMeta, fetchMemories, fetchOverview };
+  const fetchSessions = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/sessions${listQuery(options)}`, sessionItemSchema, 'Invalid Magic Context sessions payload');
+
+  const fetchDreamRuns = (options: McMemoriesOptions = {}) =>
+    readList(`${BASE_PATH}/dreamer/runs${listQuery(options)}`, dreamRunItemSchema, 'Invalid Magic Context dreamer payload');
+
+  const fetchPrimers = (options: McMemoriesOptions = {}) =>
+    readList(`${BASE_PATH}/primers${listQuery(options)}`, primerItemSchema, 'Invalid Magic Context primers payload');
+
+  const fetchUserMemories = (options: McMemoriesOptions = {}) =>
+    readList(`${BASE_PATH}/user-memories${listQuery(options)}`, userMemoryItemSchema, 'Invalid Magic Context user memories payload');
+
+  const fetchWorkspaces = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/workspaces${listQuery(options)}`, workspaceItemSchema, 'Invalid Magic Context workspaces payload');
+
+  const fetchConfig = async (): Promise<McFilePreview> => {
+    const data = parseBody(filePreviewSchema, await requestText(`${BASE_PATH}/config`, 'Invalid Magic Context config payload'), 'Invalid Magic Context config payload');
+    return data;
+  };
+
+  const fetchLogs = async (): Promise<McFilePreview> => {
+    const data = parseBody(filePreviewSchema, await requestText(`${BASE_PATH}/logs`, 'Invalid Magic Context logs payload'), 'Invalid Magic Context logs payload');
+    return data;
+  };
+
+  return {
+    fetchMeta,
+    fetchMemories,
+    fetchOverview,
+    fetchSessions,
+    fetchDreamRuns,
+    fetchPrimers,
+    fetchUserMemories,
+    fetchWorkspaces,
+    fetchConfig,
+    fetchLogs,
+  };
 };
 
 export type McApi = ReturnType<typeof createMcApi>;

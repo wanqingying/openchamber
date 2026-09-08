@@ -2299,4 +2299,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': 'Актуальні',
   'settings.magicContext.stat.projects': 'Проєкти',
   'settings.magicContext.stat.categories': 'Категорії',
+  'settings.magicContext.section.sessions': 'Сеанси',
+  'settings.magicContext.section.dreamer': 'Dreamer',
+  'settings.magicContext.section.primers': 'Праймери',
+  'settings.magicContext.section.userMemories': 'Памʼять користувача',
+  'settings.magicContext.section.workspaces': 'Робочі області',
+  'settings.magicContext.section.config': 'Конфігурація',
+  'settings.magicContext.section.logs': 'Журнали',
+  'settings.magicContext.listEmpty': 'Поки що тут нічого немає.',
 } as const;

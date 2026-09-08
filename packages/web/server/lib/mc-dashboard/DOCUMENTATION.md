@@ -17,6 +17,13 @@ hint instead of reading incompatible state.
 | `GET /api/openchamber/mc/memories` | Read-only paged memory list from the plugin `memories` table, newest first. Query params: `project`, `category`, `status`, `limit` (1-500), `offset`. Every row carries a bounded `contentExcerpt`, never full content. Gate failures return the same gating payload as `meta`; bad params return 400. |
 | `GET /api/openchamber/mc/overview` | Read-only memory aggregates: `totalMemories`, `currentMemories` (`status IN ('active','permanent')`), `projects`, `categories`. Gate failures return the same gating payload as `meta`. |
 | `GET /api/openchamber/mc/workspaces` | Read-only workspace list from the plugin `workspaces` table, newest-updated first, with member counts. Query params: `limit`, `offset`. Gate failures return the same gating payload as `meta`. |
+| `GET /api/openchamber/mc/sessions` | Read-only session list from the OpenCode database (`opencode.db`), newest-activity first. Query params: `limit`, `offset`. Missing `opencode.db` reports `missing-opencode-db`. |
+| `GET /api/openchamber/mc/sessions/:id` | Read-only per-session insight from `context.db`: `session_meta` token/cache summary, facts, session notes, smart notes and compartments (bounded lists). |
+| `GET /api/openchamber/mc/dreamer/runs` | Read-only dreamer run list from `dream_runs`, newest-finished first. Query params: `project`, `limit`, `offset`. |
+| `GET /api/openchamber/mc/primers` | Read-only primer list (`active` first, then by last observation). Query params: `project`, `limit`, `offset`. |
+| `GET /api/openchamber/mc/user-memories` | Read-only user memories. Query params: `status` (`active` default, `dismissed`), `limit`, `offset`. |
+| `GET /api/openchamber/mc/config` | Read-only preview of the user `magic-context.jsonc` (capped bytes). `exists:false` when absent. |
+| `GET /api/openchamber/mc/logs` | Read-only preview of the harness `magic-context.log` (capped bytes). `exists:false` when absent. |
 
 ## Correctness invariants
 

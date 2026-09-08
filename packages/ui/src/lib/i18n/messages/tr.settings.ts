@@ -2289,4 +2289,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': 'Geçerli',
   'settings.magicContext.stat.projects': 'Projeler',
   'settings.magicContext.stat.categories': 'Kategoriler',
+  'settings.magicContext.section.sessions': 'Oturumlar',
+  'settings.magicContext.section.dreamer': 'Dreamer',
+  'settings.magicContext.section.primers': 'Primerlar',
+  'settings.magicContext.section.userMemories': 'Kullanıcı anıları',
+  'settings.magicContext.section.workspaces': 'Çalışma alanları',
+  'settings.magicContext.section.config': 'Yapılandırma',
+  'settings.magicContext.section.logs': 'Günlükler',
+  'settings.magicContext.listEmpty': 'Henüz burada bir şey yok.',
 };

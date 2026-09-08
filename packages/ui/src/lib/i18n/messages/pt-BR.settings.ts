@@ -2299,4 +2299,12 @@ export const settingsDict = {
   'settings.magicContext.stat.currentMemories': 'Atuais',
   'settings.magicContext.stat.projects': 'Projetos',
   'settings.magicContext.stat.categories': 'Categorias',
+  'settings.magicContext.section.sessions': 'Sessões',
+  'settings.magicContext.section.dreamer': 'Dreamer',
+  'settings.magicContext.section.primers': 'Primers',
+  'settings.magicContext.section.userMemories': 'Memórias do usuário',
+  'settings.magicContext.section.workspaces': 'Espaços de trabalho',
+  'settings.magicContext.section.config': 'Configuração',
+  'settings.magicContext.section.logs': 'Logs',
+  'settings.magicContext.listEmpty': 'Nada por aqui ainda.',
 } as const;
