@@ -77,6 +77,11 @@ High-value anchors:
 - Electron: `packages/electron/README.md`
 - Mobile: `packages/mobile/README.md`
 
+Run, build, and package flows live in `CONTRIBUTING.md` (Dev Scripts, Build And
+Package Commands). Read the relevant part before launching a dev server or
+packaging for a platform; CONTRIBUTING is otherwise only required reading at PR
+handoff.
+
 ## Project Skills
 
 Project skills live under `.agents/skills/*/SKILL.md`. You **MUST** load every
