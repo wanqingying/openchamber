@@ -151,6 +151,19 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       respondError(res, error);
     }
   });
+  app.get('/api/openchamber/mc/sessions/:id/cache-events', async (req, res) => {
+    const rawSessionId = req.params.id === undefined || req.params.id === null ? '' : String(req.params.id);
+    const sessionId = rawSessionId.trim();
+    if (!sessionId) {
+      res.status(400).json({ error: 'session id is required' });
+      return;
+    }
+    try {
+      respondResult(res, await runtime.getSessionCacheEvents(sessionId));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
   app.get('/api/openchamber/mc/primer-candidates', async (req, res) => {
     const parsed = parseLimitOffset(req);
     if (!parsed.ok) {

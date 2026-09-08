@@ -542,6 +542,31 @@ describe('extended surfaces', () => {
     expect(memories.data.items[0].content).toBe('keep this');
   });
 
+  it('classifies assistant cache events from opencode messages', async () => {
+    const xdgHome = makeTempDir();
+    const dir = path.join(xdgHome, 'opencode');
+    fs.mkdirSync(dir, { recursive: true });
+    const dbPath = path.join(dir, 'opencode.db');
+    const opened = await openMagicContextDatabaseForWrite({ dbPath });
+    expect(opened.ok).toBe(true);
+    try {
+      const db = opened.db;
+      db.exec('CREATE TABLE message (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, time_created INTEGER, data TEXT NOT NULL)');
+      const insert = db.prepare('INSERT INTO message (id, session_id, time_created, data) VALUES (?, ?, ?, ?)');
+      insert.run('m1', 's1', 100, JSON.stringify({ role: 'user', tokens: null }));
+      insert.run('m2', 's1', 200, JSON.stringify({ role: 'assistant', tokens: { total: 100, input: 100, output: 0, cache: { read: 0, write: 50 } } }));
+      insert.run('m3', 's1', 300, JSON.stringify({ role: 'assistant', tokens: { total: 60, input: 10, output: 2, cache: { read: 49, write: 0 } } }));
+      insert.run('m4', 's1', 400, JSON.stringify({ role: 'assistant', tokens: { total: 60, input: 10, output: 2, cache: { read: 0, write: 60 } } }));
+    } finally {
+      opened.db.close();
+    }
+    const runtime = createRuntimeFor({ XDG_DATA_HOME: xdgHome });
+    const result = await runtime.getSessionCacheEvents('s1');
+    expect(result.ok).toBe(true);
+    expect(result.data.events.map((event) => event.severity)).toEqual(['info', 'stable', 'full-bust']);
+    expect(result.data.summary).toMatchObject({ info: 1, stable: 1, fullBust: 1, bust: 0 });
+  });
+
   it('reads config and log file previews', async () => {
     const root = makeTempDir();
     fs.mkdirSync(path.join(root, 'cortexkit'), { recursive: true });

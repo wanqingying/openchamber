@@ -4,6 +4,7 @@ import { listMemories } from './queries/memories.js';
 import { memoryOverview } from './queries/overview.js';
 import { listWorkspaces } from './queries/workspaces.js';
 import { listOpencodeSessions, resolveOpencodeDbPath } from './queries/opencode.js';
+import { sessionCacheEvents } from './queries/opencode-cache.js';
 import { sessionInsight } from './queries/session-insight.js';
 import { cacheSessionSummary } from './queries/cache.js';
 import { listDreamRuns, dreamRunDetail } from './queries/dreamer.js';
@@ -169,6 +170,14 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     return queryWithClose(opened, (db) => listOpencodeSessions(db, options));
   };
 
+  const getSessionCacheEvents = async (sessionId) => {
+    const opened = await openOpencodeDb({ env, homedir });
+    if (!opened.ok) {
+      return opened.payload;
+    }
+    return queryWithClose(opened, (db) => sessionCacheEvents(db, sessionId));
+  };
+
   const getSessionInsight = async (sessionId) => {
     const result = await run((db) => sessionInsight(db, sessionId));
     if (!result.ok) {
@@ -210,6 +219,7 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     listSessions,
     getSessionInsight,
     getDreamRun,
+    getSessionCacheEvents,
     readConfig,
     readLogs,
   };
