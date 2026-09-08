@@ -100,4 +100,28 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       });
     }
   });
+  app.get('/api/openchamber/mc/workspaces', async (req, res) => {
+    const limit = readNonNegativeInt(readSingleQueryValue(req.query.limit));
+    if (!limit.ok || (limit.value !== undefined && limit.value < 1)) {
+      res.status(400).json({ error: 'limit must be an integer between 1 and 500' });
+      return;
+    }
+    const offset = readNonNegativeInt(readSingleQueryValue(req.query.offset));
+    if (!offset.ok || (offset.value !== undefined && offset.value > MAX_OFFSET)) {
+      res.status(400).json({ error: `offset must be an integer between 0 and ${MAX_OFFSET}` });
+      return;
+    }
+    try {
+      const result = await runtime.listWorkspaces(applyPagination({}, limit, offset));
+      if (!result.ok) {
+        res.json(result.payload ?? result);
+        return;
+      }
+      res.json(result.data);
+    } catch (error) {
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
 };

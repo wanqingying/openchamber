@@ -424,3 +424,51 @@ describe('overview', () => {
     expect(result.reason).toBe(MC_UNAVAILABLE_MISSING_DB);
   });
 });
+
+describe('workspaces', () => {
+  const seedWorkspaces = async () => {
+    const storageDir = makeTempDir();
+    const dbPath = path.join(storageDir, 'context.db');
+    const opened = await openMagicContextDatabaseForWrite({ dbPath });
+    expect(opened.ok).toBe(true);
+    try {
+      const db = opened.db;
+      db.exec(`
+        CREATE TABLE workspaces (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          share_categories TEXT NOT NULL DEFAULT '["CONSTRAINTS"]'
+        );
+        CREATE TABLE workspace_members (
+          workspace_id INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+          project_path TEXT NOT NULL,
+          display_name TEXT NOT NULL
+        );
+      `);
+      db.prepare('INSERT INTO workspaces (id, name, created_at, updated_at, share_categories) VALUES (1, ?, 100, 300, ?)').run('ws-a', '["CONSTRAINTS","ARCHITECTURE"]');
+      db.prepare('INSERT INTO workspaces (id, name, created_at, updated_at, share_categories) VALUES (2, ?, 200, 200, ?)').run('ws-b', '["CONSTRAINTS"]');
+      db.prepare('INSERT INTO workspace_members (workspace_id, project_path, display_name) VALUES (1, ?1, ?1)').run('/p1');
+      db.prepare('INSERT INTO workspace_members (workspace_id, project_path, display_name) VALUES (1, ?1, ?1)').run('/p2');
+    } finally {
+      opened.db.close();
+    }
+    return storageDir;
+  };
+
+  it('lists workspaces newest-updated first with member counts', async () => {
+    const storageDir = await seedWorkspaces();
+    const runtime = createMcDashboardRuntime({
+      env: { MAGIC_CONTEXT_STORAGE_DIR: storageDir },
+      homedir: () => '/home/tester',
+    });
+    const result = await runtime.listWorkspaces({});
+    expect(result.ok).toBe(true);
+    expect(result.data.total).toBe(2);
+    expect(result.data.items.map((item) => item.name)).toEqual(['ws-a', 'ws-b']);
+    expect(result.data.items[0].memberCount).toBe(2);
+    expect(result.data.items[1].memberCount).toBe(0);
+    expect(result.data.items[0].shareCategories).toBe('["CONSTRAINTS","ARCHITECTURE"]');
+  });
+});

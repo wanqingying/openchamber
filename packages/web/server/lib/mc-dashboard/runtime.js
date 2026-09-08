@@ -2,6 +2,7 @@ import { dbFileExists, resolveMagicContextDbPath } from './paths.js';
 import { openMagicContextDatabase } from './sqlite.js';
 import { listMemories } from './queries/memories.js';
 import { memoryOverview } from './queries/overview.js';
+import { listWorkspaces } from './queries/workspaces.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
 export const MC_MAX_SUPPORTED_SCHEMA = 84;
@@ -126,5 +127,13 @@ export const createMcDashboardRuntime = ({ env, homedir }) => {
     return { ok: true, data: result.data };
   };
 
-  return { getMeta, listMemories: listMemoriesRoute, overview: overviewRoute };
+  const listWorkspacesRoute = async (options) => {
+    const result = await run((db) => listWorkspaces(db, options));
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: result.data };
+  };
+
+  return { getMeta, listMemories: listMemoriesRoute, overview: overviewRoute, listWorkspaces: listWorkspacesRoute };
 };

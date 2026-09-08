@@ -16,6 +16,7 @@ hint instead of reading incompatible state.
 | `GET /api/openchamber/mc/meta` | Gating state for the MC feature. `available: true` carries `schemaVersion`, `targetMcVersion` and `maxSupportedSchema`; `available: false` carries a `reason`: `missing-db`, `schema-too-new`, `sqlite-unavailable`, `open-failed`, or `storage-dir-unavailable`. The UI renders copy per state. |
 | `GET /api/openchamber/mc/memories` | Read-only paged memory list from the plugin `memories` table, newest first. Query params: `project`, `category`, `status`, `limit` (1-500), `offset`. Every row carries a bounded `contentExcerpt`, never full content. Gate failures return the same gating payload as `meta`; bad params return 400. |
 | `GET /api/openchamber/mc/overview` | Read-only memory aggregates: `totalMemories`, `currentMemories` (`status IN ('active','permanent')`), `projects`, `categories`. Gate failures return the same gating payload as `meta`. |
+| `GET /api/openchamber/mc/workspaces` | Read-only workspace list from the plugin `workspaces` table, newest-updated first, with member counts. Query params: `limit`, `offset`. Gate failures return the same gating payload as `meta`. |
 
 ## Correctness invariants
 
