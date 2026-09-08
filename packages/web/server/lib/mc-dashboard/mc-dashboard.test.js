@@ -509,7 +509,7 @@ describe('extended surfaces', () => {
         CREATE TABLE session_facts (id INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT NOT NULL, category TEXT, content TEXT NOT NULL, created_at INTEGER, updated_at INTEGER);
         CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT DEFAULT 'session', status TEXT DEFAULT 'active', content TEXT, session_id TEXT, project_path TEXT, created_at INTEGER, updated_at INTEGER, ready_at INTEGER);
         CREATE TABLE compartments (session_id TEXT NOT NULL, sequence INTEGER NOT NULL, created_at INTEGER);
-        CREATE TABLE dream_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, project_path TEXT NOT NULL, started_at INTEGER, finished_at INTEGER, tasks_succeeded INTEGER, tasks_failed INTEGER, smart_notes_surfaced INTEGER, smart_notes_pending INTEGER, parent_session_id TEXT);
+        CREATE TABLE dream_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, project_path TEXT NOT NULL, started_at INTEGER, finished_at INTEGER, tasks_succeeded INTEGER, tasks_failed INTEGER, smart_notes_surfaced INTEGER, smart_notes_pending INTEGER, parent_session_id TEXT, memory_changes_json TEXT);
         CREATE TABLE primers (id INTEGER PRIMARY KEY AUTOINCREMENT, project_path TEXT NOT NULL, question TEXT NOT NULL, answer TEXT, status TEXT DEFAULT 'active', total_support INTEGER, last_observed_at INTEGER, created_at INTEGER, updated_at INTEGER);
         CREATE TABLE user_memories (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT NOT NULL, status TEXT DEFAULT 'active', promoted_at INTEGER, created_at INTEGER, updated_at INTEGER);
       `);

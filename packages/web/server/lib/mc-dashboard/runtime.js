@@ -5,8 +5,9 @@ import { memoryOverview } from './queries/overview.js';
 import { listWorkspaces } from './queries/workspaces.js';
 import { listOpencodeSessions, resolveOpencodeDbPath } from './queries/opencode.js';
 import { sessionInsight } from './queries/session-insight.js';
-import { listDreamRuns } from './queries/dreamer.js';
-import { listPrimers, listUserMemories } from './queries/primers.js';
+import { cacheSessionSummary } from './queries/cache.js';
+import { listDreamRuns, dreamRunDetail } from './queries/dreamer.js';
+import { listPrimers, listUserMemories, listPrimerCandidates, listUserMemoryCandidates, listMuralManifests } from './queries/primers.js';
 import { readFilePreview, resolveMagicContextLogPath, resolveUserConfigPath } from './queries/files.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
@@ -176,6 +177,14 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     return { ok: true, data: result.data };
   };
 
+  const getDreamRun = async (runId) => {
+    const result = await run((db) => dreamRunDetail(db, runId));
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: result.data };
+  };
+
   const readConfig = async () => {
     const filePath = resolveUserConfigPath({ env, homedir });
     return { ok: true, data: readFilePreview(filePath) };
@@ -194,8 +203,13 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     listDreamRuns: listFromContext(listDreamRuns),
     listPrimers: listFromContext(listPrimers),
     listUserMemories: listFromContext(listUserMemories),
+    listCacheSessions: listFromContext(cacheSessionSummary),
+    listPrimerCandidates: listFromContext(listPrimerCandidates),
+    listUserMemoryCandidates: listFromContext(listUserMemoryCandidates),
+    listMuralManifests: listFromContext(listMuralManifests),
     listSessions,
     getSessionInsight,
+    getDreamRun,
     readConfig,
     readLogs,
   };

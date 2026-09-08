@@ -126,6 +126,68 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       respondError(res, error);
     }
   });
+  app.get('/api/openchamber/mc/dreamer/runs/:id', async (req, res) => {
+    const rawRunId = req.params.id === undefined || req.params.id === null ? '' : String(req.params.id);
+    const runId = rawRunId.trim();
+    if (!/^\d+$/.test(runId)) {
+      res.status(400).json({ error: 'run id must be a positive integer' });
+      return;
+    }
+    try {
+      respondResult(res, await runtime.getDreamRun(Number(runId)));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
+  app.get('/api/openchamber/mc/cache/sessions', async (req, res) => {
+    const parsed = parseLimitOffset(req);
+    if (!parsed.ok) {
+      res.status(400).json({ error: parsed.error });
+      return;
+    }
+    try {
+      respondResult(res, await runtime.listCacheSessions(parsed.options));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
+  app.get('/api/openchamber/mc/primer-candidates', async (req, res) => {
+    const parsed = parseLimitOffset(req);
+    if (!parsed.ok) {
+      res.status(400).json({ error: parsed.error });
+      return;
+    }
+    try {
+      respondResult(res, await runtime.listPrimerCandidates(parsed.options));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
+  app.get('/api/openchamber/mc/user-memory-candidates', async (req, res) => {
+    const parsed = parseLimitOffset(req);
+    if (!parsed.ok) {
+      res.status(400).json({ error: parsed.error });
+      return;
+    }
+    try {
+      respondResult(res, await runtime.listUserMemoryCandidates(parsed.options));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
+  app.get('/api/openchamber/mc/mural', async (req, res) => {
+    const parsed = parseLimitOffset(req);
+    if (!parsed.ok) {
+      res.status(400).json({ error: parsed.error });
+      return;
+    }
+    parsed.options.projectPath = readSingleQueryValue(req.query.project);
+    try {
+      respondResult(res, await runtime.listMuralManifests(parsed.options));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
   app.get('/api/openchamber/mc/dreamer/runs', async (req, res) => {
     const parsed = parseLimitOffset(req);
     if (!parsed.ok) {
