@@ -76,3 +76,6 @@ workspaces/
 .maintenance-clone
 test-results/
 artifacts/
+
+# Local codegraph index
+.codegraph/
