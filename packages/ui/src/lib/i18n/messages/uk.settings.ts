@@ -2308,4 +2308,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'Журнали',
   'settings.magicContext.listEmpty': 'Поки що тут нічого немає.',
   'settings.magicContext.searchPlaceholder': 'Пошук памʼяті…',
+  'settings.magicContext.section.cache': 'Кеш',
+  'settings.magicContext.section.primerCandidates': 'Кандидати-праймери',
+  'settings.magicContext.section.userMemoryCandidates': 'Кандидати памʼяті користувача',
+  'settings.magicContext.section.mural': 'Мурал',
 } as const;

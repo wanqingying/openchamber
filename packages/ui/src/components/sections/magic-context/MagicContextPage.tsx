@@ -15,6 +15,10 @@ import type {
   McSession,
   McUserMemory,
   McWorkspace,
+  McCacheSession,
+  McPrimerCandidate,
+  McUserMemoryCandidate,
+  McMural,
 } from '@/lib/mcApi';
 
 type View =
@@ -25,10 +29,14 @@ type View =
 
 interface Panels {
   sessions: McPage<McSession> | null;
+  cache: McPage<McCacheSession> | null;
   dreams: McPage<McDreamRun> | null;
   primers: McPage<McPrimer> | null;
+  primerCandidates: McPage<McPrimerCandidate> | null;
   userMemories: McPage<McUserMemory> | null;
+  userMemoryCandidates: McPage<McUserMemoryCandidate> | null;
   workspaces: McPage<McWorkspace> | null;
+  murals: McPage<McMural> | null;
   config: string | null;
   logs: string | null;
 }
@@ -61,6 +69,16 @@ const formatEpoch = (value: number | null | undefined): string => {
   }
 };
 
+const formatBytes = (value: number | null | undefined): string => {
+  if (value === null || value === undefined || !Number.isFinite(value) || value <= 0) {
+    return '';
+  }
+  if (value >= 1048576) {
+    return `${(value / 1048576).toFixed(1)} MB`;
+  }
+  return `${Math.round(value / 1024)} KB`;
+};
+
 export const MagicContextPage: React.FC = () => {
   const { t } = useI18n();
   const [view, setView] = React.useState<View>({ status: 'loading' });
@@ -69,10 +87,14 @@ export const MagicContextPage: React.FC = () => {
   const [total, setTotal] = React.useState(0);
   const [panels, setPanels] = React.useState<Panels>({
     sessions: null,
+    cache: null,
     dreams: null,
     primers: null,
+    primerCandidates: null,
     userMemories: null,
+    userMemoryCandidates: null,
     workspaces: null,
+    murals: null,
     config: null,
     logs: null,
   });
@@ -80,21 +102,38 @@ export const MagicContextPage: React.FC = () => {
   const [search, setSearch] = React.useState('');
 
   const loadPanels = React.useCallback(async () => {
-    const [sessions, dreams, primers, userMemories, workspaces, config, logs] = await Promise.allSettled([
+    const [sessions, cache, dreams, primers, primerCandidates, userMemories, userMemoryCandidates, workspaces, murals, config, logs] = await Promise.allSettled([
       mcApi.fetchSessions({ limit: PANEL_LIMIT }),
+      mcApi.fetchCacheSessions({ limit: PANEL_LIMIT }),
       mcApi.fetchDreamRuns({ limit: PANEL_LIMIT }),
       mcApi.fetchPrimers({ limit: PANEL_LIMIT }),
+      mcApi.fetchPrimerCandidates({ limit: PANEL_LIMIT }),
       mcApi.fetchUserMemories({ limit: PANEL_LIMIT, status: 'active' }),
+      mcApi.fetchUserMemoryCandidates({ limit: PANEL_LIMIT }),
       mcApi.fetchWorkspaces({ limit: PANEL_LIMIT }),
+      mcApi.fetchMuralManifests({ limit: PANEL_LIMIT }),
       mcApi.fetchConfig(),
       mcApi.fetchLogs(),
     ]);
+    const sessionsOk = sessions.status === 'fulfilled' && !('gated' in sessions.value) ? sessions.value : null;
+    const cacheOk = cache.status === 'fulfilled' && !('gated' in cache.value) ? cache.value : null;
+    const dreamsOk = dreams.status === 'fulfilled' && !('gated' in dreams.value) ? dreams.value : null;
+    const primersOk = primers.status === 'fulfilled' && !('gated' in primers.value) ? primers.value : null;
+    const primerCandidatesOk = primerCandidates.status === 'fulfilled' && !('gated' in primerCandidates.value) ? primerCandidates.value : null;
+    const userMemoriesOk = userMemories.status === 'fulfilled' && !('gated' in userMemories.value) ? userMemories.value : null;
+    const userMemoryCandidatesOk = userMemoryCandidates.status === 'fulfilled' && !('gated' in userMemoryCandidates.value) ? userMemoryCandidates.value : null;
+    const workspacesOk = workspaces.status === 'fulfilled' && !('gated' in workspaces.value) ? workspaces.value : null;
+    const muralsOk = murals.status === 'fulfilled' && !('gated' in murals.value) ? murals.value : null;
     setPanels({
-      sessions: sessions.status === 'fulfilled' && !('gated' in sessions.value) ? sessions.value : null,
-      dreams: dreams.status === 'fulfilled' && !('gated' in dreams.value) ? dreams.value : null,
-      primers: primers.status === 'fulfilled' && !('gated' in primers.value) ? primers.value : null,
-      userMemories: userMemories.status === 'fulfilled' && !('gated' in userMemories.value) ? userMemories.value : null,
-      workspaces: workspaces.status === 'fulfilled' && !('gated' in workspaces.value) ? workspaces.value : null,
+      sessions: sessionsOk,
+      cache: cacheOk,
+      dreams: dreamsOk,
+      primers: primersOk,
+      primerCandidates: primerCandidatesOk,
+      userMemories: userMemoriesOk,
+      userMemoryCandidates: userMemoryCandidatesOk,
+      workspaces: workspacesOk,
+      murals: muralsOk,
       config: config.status === 'fulfilled' && config.value.exists ? config.value.content : null,
       logs: logs.status === 'fulfilled' && logs.value.exists ? logs.value.content : null,
     });
@@ -104,7 +143,7 @@ export const MagicContextPage: React.FC = () => {
     setView({ status: 'loading' });
     setLoadMoreError(false);
     setOverview(null);
-    setPanels({ sessions: null, dreams: null, primers: null, userMemories: null, workspaces: null, config: null, logs: null });
+    setPanels({ sessions: null, cache: null, dreams: null, primers: null, primerCandidates: null, userMemories: null, userMemoryCandidates: null, workspaces: null, murals: null, config: null, logs: null });
     try {
       const meta = await mcApi.fetchMeta();
       if (meta.gated) {
@@ -242,6 +281,67 @@ export const MagicContextPage: React.FC = () => {
             </ul>
           )}
         </SettingsSection>
+      ) : null}
+      {panels.cache ? (
+        <SettingsSection title={t('settings.magicContext.section.cache')}>
+          {panels.cache.items.length === 0 ? listPanel(true) : (
+            <ul className="space-y-3">
+              {panels.cache.items.map((entry) => (
+                <li key={entry.sessionId} className="space-y-0.5">
+                  <p className="typography-body text-foreground">{entry.sessionId}</p>
+                  <p className="typography-caption text-muted-foreground">
+                    {[entry.harness ?? '', formatBytes(entry.cachedM0Bytes), `m0:${entry.memoryBlockCount ?? 0}`, `compartments:${entry.compartmentCount}`].filter(Boolean).join(' · ')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SettingsSection>
+      ) : null}
+      {panels.primerCandidates ? (
+        <SettingsSection title={t('settings.magicContext.section.primerCandidates')}>
+          {panels.primerCandidates.items.length === 0 ? listPanel(true) : (
+            <ul className="space-y-3">
+              {panels.primerCandidates.items.map((candidate) => (
+                <li key={candidate.id} className="space-y-0.5">
+                  <p className="typography-body text-foreground">{candidate.question}</p>
+                  <p className="typography-caption text-muted-foreground">
+                    {[candidate.projectPath, formatEpoch(candidate.sourceMessageTime)].filter(Boolean).join(' · ')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SettingsSection>
+      ) : null}
+      {panels.userMemoryCandidates ? (
+        <SettingsSection title={t('settings.magicContext.section.userMemoryCandidates')}>
+          {panels.userMemoryCandidates.items.length === 0 ? listPanel(true) : (
+            <ul className="space-y-3">
+              {panels.userMemoryCandidates.items.map((candidate) => (
+                <li key={candidate.id} className="space-y-0.5">
+                  <p className="typography-body text-foreground">{candidate.content}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SettingsSection>
+      ) : null}
+      {panels.murals ? (
+        <SettingsSection title={t('settings.magicContext.section.mural')}>
+          {panels.murals.items.length === 0 ? listPanel(true) : (
+            <ul className="space-y-3">
+              {panels.murals.items.map((mural) => (
+                <li key={mural.projectPath} className="space-y-0.5">
+                  <p className="typography-body text-foreground">{mural.projectPath}</p>
+                  <p className="typography-caption text-muted-foreground">
+                    {[formatEpoch(mural.renderedAt), mural.width !== null && mural.height !== null ? `${mural.width}×${mural.height}` : '', mural.model ?? ''].filter(Boolean).join(' · ')}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+         </SettingsSection>
       ) : null}
       {panels.dreams ? (
         <SettingsSection title={t('settings.magicContext.section.dreamer')}>

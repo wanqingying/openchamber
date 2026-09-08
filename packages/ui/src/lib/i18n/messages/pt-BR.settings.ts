@@ -2308,4 +2308,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'Logs',
   'settings.magicContext.listEmpty': 'Nada por aqui ainda.',
   'settings.magicContext.searchPlaceholder': 'Buscar memórias…',
+  'settings.magicContext.section.cache': 'Cache',
+  'settings.magicContext.section.primerCandidates': 'Candidatos a primers',
+  'settings.magicContext.section.userMemoryCandidates': 'Candidatas a memórias do usuário',
+  'settings.magicContext.section.mural': 'Mural',
 } as const;

@@ -2308,4 +2308,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'ログ',
   'settings.magicContext.listEmpty': 'まだ何もありません。',
   'settings.magicContext.searchPlaceholder': 'メモリを検索…',
+  'settings.magicContext.section.cache': 'キャッシュ',
+  'settings.magicContext.section.primerCandidates': 'プライマー候補',
+  'settings.magicContext.section.userMemoryCandidates': 'ユーザーメモリ候補',
+  'settings.magicContext.section.mural': 'ミューラル',
 } as const;

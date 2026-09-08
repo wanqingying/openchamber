@@ -2298,4 +2298,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'Logs',
   'settings.magicContext.listEmpty': 'Nothing here yet.',
   'settings.magicContext.searchPlaceholder': 'Search memories…',
+  'settings.magicContext.section.cache': 'Cache',
+  'settings.magicContext.section.primerCandidates': 'Primer candidates',
+  'settings.magicContext.section.userMemoryCandidates': 'User memory candidates',
+  'settings.magicContext.section.mural': 'Mural',
 } as const;

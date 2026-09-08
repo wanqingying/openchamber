@@ -112,6 +112,35 @@ export interface McPage<T> {
   items: T[];
 }
 
+export interface McCacheSession {
+  sessionId: string;
+  harness: string | null;
+  cachedM0Bytes: number | null;
+  memoryBlockCount: number | null;
+  compartmentCount: number;
+}
+
+export interface McPrimerCandidate {
+  id: number;
+  projectPath: string;
+  question: string;
+  sourceMessageTime: number | null;
+}
+
+export interface McUserMemoryCandidate {
+  id: number;
+  content: string;
+}
+
+export interface McMural {
+  projectPath: string;
+  renderedAt: number | null;
+  width: number | null;
+  height: number | null;
+  model: string | null;
+  contentHash: string | null;
+}
+
 export interface McFilePreview {
   exists: boolean;
   path: string;
@@ -263,6 +292,35 @@ const workspaceItemSchema = z.object({
   updatedAt: z.number().finite(),
   shareCategories: z.string(),
   memberCount: z.number().int().nonnegative(),
+});
+
+const cacheSessionItemSchema = z.object({
+  sessionId: z.string(),
+  harness: z.string().nullish().transform((value) => value ?? null),
+  cachedM0Bytes: nullableInt(),
+  memoryBlockCount: nullableInt(),
+  compartmentCount: z.number().int().nonnegative(),
+});
+
+const primerCandidateItemSchema = z.object({
+  id: z.number().int(),
+  projectPath: z.string(),
+  question: z.string(),
+  sourceMessageTime: nullableInt(),
+});
+
+const userMemoryCandidateItemSchema = z.object({
+  id: z.number().int(),
+  content: z.string(),
+});
+
+const muralItemSchema = z.object({
+  projectPath: z.string(),
+  renderedAt: nullableInt(),
+  width: nullableInt(),
+  height: nullableInt(),
+  model: z.string().nullish().transform((value) => value ?? null),
+  contentHash: z.string().nullish().transform((value) => value ?? null),
 });
 
 const filePreviewSchema = z.object({
@@ -447,6 +505,18 @@ export const createMcApi = (fetcher: McFetcher) => {
   const fetchWorkspaces = (options: { limit?: number; offset?: number } = {}) =>
     readList(`${BASE_PATH}/workspaces${listQuery(options)}`, workspaceItemSchema, 'Invalid Magic Context workspaces payload');
 
+  const fetchCacheSessions = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/cache/sessions${listQuery(options)}`, cacheSessionItemSchema, 'Invalid Magic Context cache payload');
+
+  const fetchPrimerCandidates = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/primer-candidates${listQuery(options)}`, primerCandidateItemSchema, 'Invalid Magic Context primer candidates payload');
+
+  const fetchUserMemoryCandidates = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/user-memory-candidates${listQuery(options)}`, userMemoryCandidateItemSchema, 'Invalid Magic Context user memory candidates payload');
+
+  const fetchMuralManifests = (options: { limit?: number; offset?: number } = {}) =>
+    readList(`${BASE_PATH}/mural${listQuery(options)}`, muralItemSchema, 'Invalid Magic Context mural payload');
+
   const fetchConfig = async (): Promise<McFilePreview> => {
     const data = parseBody(filePreviewSchema, await requestText(`${BASE_PATH}/config`, 'Invalid Magic Context config payload'), 'Invalid Magic Context config payload');
     return data;
@@ -466,6 +536,10 @@ export const createMcApi = (fetcher: McFetcher) => {
     fetchPrimers,
     fetchUserMemories,
     fetchWorkspaces,
+    fetchCacheSessions,
+    fetchPrimerCandidates,
+    fetchUserMemoryCandidates,
+    fetchMuralManifests,
     fetchConfig,
     fetchLogs,
   };

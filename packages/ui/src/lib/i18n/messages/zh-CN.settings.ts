@@ -2308,4 +2308,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': '日志',
   'settings.magicContext.listEmpty': '这里还没有内容。',
   'settings.magicContext.searchPlaceholder': '搜索记忆…',
+  'settings.magicContext.section.cache': '缓存',
+  'settings.magicContext.section.primerCandidates': '提示词候选',
+  'settings.magicContext.section.userMemoryCandidates': '用户记忆候选',
+  'settings.magicContext.section.mural': '壁画',
 } as const;

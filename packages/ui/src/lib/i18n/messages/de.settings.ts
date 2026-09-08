@@ -2299,4 +2299,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'Logs',
   'settings.magicContext.listEmpty': 'Noch nichts vorhanden.',
   'settings.magicContext.searchPlaceholder': 'Erinnerungen durchsuchen…',
+  'settings.magicContext.section.cache': 'Cache',
+  'settings.magicContext.section.primerCandidates': 'Primer-Kandidaten',
+  'settings.magicContext.section.userMemoryCandidates': 'Benutzererinnerungs-Kandidaten',
+  'settings.magicContext.section.mural': 'Wandbild',
 };

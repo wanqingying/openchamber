@@ -2308,4 +2308,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': '로그',
   'settings.magicContext.listEmpty': '아직 아무것도 없습니다.',
   'settings.magicContext.searchPlaceholder': '메모리 검색…',
+  'settings.magicContext.section.cache': '캐시',
+  'settings.magicContext.section.primerCandidates': '프라이머 후보',
+  'settings.magicContext.section.userMemoryCandidates': '사용자 메모리 후보',
+  'settings.magicContext.section.mural': '뮤럴',
 } as const;

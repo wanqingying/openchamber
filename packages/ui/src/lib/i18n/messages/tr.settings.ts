@@ -2298,4 +2298,8 @@ export const settingsDict = {
   'settings.magicContext.section.logs': 'Günlükler',
   'settings.magicContext.listEmpty': 'Henüz burada bir şey yok.',
   'settings.magicContext.searchPlaceholder': 'Anı ara…',
+  'settings.magicContext.section.cache': 'Önbellek',
+  'settings.magicContext.section.primerCandidates': 'Primer adayları',
+  'settings.magicContext.section.userMemoryCandidates': 'Kullanıcı anısı adayları',
+  'settings.magicContext.section.mural': 'Mural',
 };
