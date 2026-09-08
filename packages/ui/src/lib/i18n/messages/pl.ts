@@ -3361,4 +3361,5 @@ export const dict: Record<I18nKey, string> = {
   'settings.mcp.page.connection.hintCommand': 'Działa na tym komputerze. Wklej całe polecenie — zostanie podzielone na jeden argument w wierszu.',
   'settings.mcp.page.connection.hintLink': 'Łączy się z serwerem hostowanym przez kogoś innego. Wklej jego adres https.',
   'commandPalette.item.openMagicContext': 'Otwórz Magic Context',
+  'sessions.sidebar.footer.actions.magicContext': 'Magic Context',
 } as const;

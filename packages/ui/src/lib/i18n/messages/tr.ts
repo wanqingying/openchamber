@@ -3342,4 +3342,5 @@ export const dict = {
   'memoryDebugPanel.requests.percentileChartLabel': 'Zaman içinde devam eden request yaş yüzdelikleri (p50, p90, p99, maks)',
   'chat.workStatus.cost.breakdown': 'Session {session} · Subagent\'ler {subagents}',
   'commandPalette.item.openMagicContext': 'Magic Context aç',
+  'sessions.sidebar.footer.actions.magicContext': 'Magic Context',
 };

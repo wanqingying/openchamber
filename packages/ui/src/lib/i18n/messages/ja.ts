@@ -3344,4 +3344,5 @@ export const dict: Record<I18nKey, string> = {
   'settings.mcp.page.connection.hintCommand': 'このマシンで実行します。コマンド全体を貼り付けると、1 行に 1 引数へ分割されます。',
   'settings.mcp.page.connection.hintLink': '他者がホストするサーバーに接続します。その https アドレスを貼り付けてください。',
   'commandPalette.item.openMagicContext': 'Magic Context を開く',
+  'sessions.sidebar.footer.actions.magicContext': 'Magic Context',
 };

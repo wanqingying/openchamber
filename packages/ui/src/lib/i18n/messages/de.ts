@@ -3342,4 +3342,5 @@ export const dict = {
   'settings.mcp.page.connection.hintCommand': 'Läuft auf diesem Rechner. Fügen Sie einen ganzen Befehl ein — er wird in ein Argument pro Zeile zerlegt.',
   'settings.mcp.page.connection.hintLink': 'Verbindet sich mit einem fremd gehosteten Server. Fügen Sie dessen https-Adresse ein.',
   'commandPalette.item.openMagicContext': 'Magic Context öffnen',
+  'sessions.sidebar.footer.actions.magicContext': 'Magic Context',
 };

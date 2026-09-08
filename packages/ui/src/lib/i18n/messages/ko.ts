@@ -3344,4 +3344,5 @@ export const dict: Record<I18nKey, string> = {
   'settings.mcp.page.connection.hintCommand': '이 컴퓨터에서 실행됩니다. 명령 전체를 붙여넣으면 한 줄에 인수 하나씩 나뉩니다.',
   'settings.mcp.page.connection.hintLink': '다른 곳에서 호스팅하는 서버에 연결합니다. https 주소를 붙여넣으세요.',
   'commandPalette.item.openMagicContext': 'Magic Context 열기',
+  'sessions.sidebar.footer.actions.magicContext': 'Magic Context',
 };

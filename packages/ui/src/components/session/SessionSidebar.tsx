@@ -122,6 +122,7 @@ const SessionSidebarComponent: React.FC<SessionSidebarProps> = ({
   const reorderProjects = useProjectsStore((state) => state.reorderProjects);
 
   const setSettingsDialogOpen = useUIStore((state) => state.setSettingsDialogOpen);
+  const setMagicContextDashboardOpen = useUIStore((state) => state.setMagicContextDashboardOpen);
   const toggleHelpDialog = useUIStore((state) => state.toggleHelpDialog);
   const setAboutDialogOpen = useUIStore((state) => state.setAboutDialogOpen);
   const setSessionSwitcherOpen = useUIStore((state) => state.setSessionSwitcherOpen);
@@ -391,6 +392,13 @@ const SessionSidebarComponent: React.FC<SessionSidebarProps> = ({
     }
     setSettingsDialogOpen(true);
   }, [mobileVariant, setSessionSwitcherOpen, setSettingsDialogOpen]);
+
+  const handleOpenMagicContext = React.useCallback(() => {
+    if (mobileVariant) {
+      setSessionSwitcherOpen(false);
+    }
+    setMagicContextDashboardOpen(true);
+  }, [mobileVariant, setSessionSwitcherOpen, setMagicContextDashboardOpen]);
 
   const showSidebarUpdateButton =
     updateStore.available &&
@@ -702,6 +710,7 @@ const SessionSidebarComponent: React.FC<SessionSidebarProps> = ({
 
       <SidebarFooter
         onOpenSettings={handleOpenSettings}
+        onOpenMagicContext={handleOpenMagicContext}
         onOpenShortcuts={toggleHelpDialog}
         onOpenAbout={() => setAboutDialogOpen(true)}
         onOpenUpdate={handleOpenUpdateDialog}
