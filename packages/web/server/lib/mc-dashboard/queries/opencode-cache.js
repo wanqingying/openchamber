@@ -96,7 +96,7 @@ export const sessionCacheEvents = (db, sessionId) => {
       stable: countSeverity('stable'),
       warning: countSeverity('warning'),
       bust: countSeverity('bust'),
-      fullBust: countSeverity('full-bust'),
+      'full-bust': countSeverity('full-bust'),
       info: countSeverity('info'),
       unknown: countSeverity('unknown'),
     },

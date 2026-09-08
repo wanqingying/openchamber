@@ -564,7 +564,7 @@ describe('extended surfaces', () => {
     const result = await runtime.getSessionCacheEvents('s1');
     expect(result.ok).toBe(true);
     expect(result.data.events.map((event) => event.severity)).toEqual(['info', 'stable', 'full-bust']);
-    expect(result.data.summary).toMatchObject({ info: 1, stable: 1, fullBust: 1, bust: 0 });
+    expect(result.data.summary).toMatchObject({ info: 1, stable: 1, 'full-bust': 1, bust: 0 });
   });
 
   it('reads config and log file previews', async () => {
