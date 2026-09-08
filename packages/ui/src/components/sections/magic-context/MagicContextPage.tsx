@@ -15,6 +15,7 @@ import type {
   McSession,
   McUserMemory,
   McWorkspace,
+  McProjectStat,
   McCacheSession,
   McCacheTimeline,
   McCacheSeverity,
@@ -30,6 +31,7 @@ type View =
   | { status: 'ready' };
 
 interface Panels {
+  projects: McPage<McProjectStat> | null;
   sessions: McPage<McSession> | null;
   cache: McPage<McCacheSession> | null;
   dreams: McPage<McDreamRun> | null;
@@ -107,24 +109,13 @@ export const MagicContextPage: React.FC = () => {
   const [overview, setOverview] = React.useState<McOverview | null>(null);
   const [items, setItems] = React.useState<McMemoryItem[]>([]);
   const [total, setTotal] = React.useState(0);
-  const [panels, setPanels] = React.useState<Panels>({    sessions: null,
-    cache: null,
-    dreams: null,
-    primers: null,
-    primerCandidates: null,
-    userMemories: null,
-    userMemoryCandidates: null,
-    workspaces: null,
-    murals: null,
-    config: null,
-    logs: null,
-  });
+  const [panels, setPanels] = React.useState<Panels>({ projects: null, sessions: null, cache: null, dreams: null, primers: null, primerCandidates: null, userMemories: null, userMemoryCandidates: null, workspaces: null, murals: null, config: null, logs: null });
   const [loadMoreError, setLoadMoreError] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const [timeline, setTimeline] = React.useState<McCacheTimeline | null>(null);
 
   const loadPanels = React.useCallback(async () => {
-    const [sessions, cache, dreams, primers, primerCandidates, userMemories, userMemoryCandidates, workspaces, murals, config, logs] = await Promise.allSettled([
+    const [sessions, cache, dreams, primers, primerCandidates, userMemories, userMemoryCandidates, workspaces, murals, projects, config, logs] = await Promise.allSettled([
       mcApi.fetchSessions({ limit: PANEL_LIMIT }),
       mcApi.fetchCacheSessions({ limit: PANEL_LIMIT }),
       mcApi.fetchDreamRuns({ limit: PANEL_LIMIT }),
@@ -134,6 +125,7 @@ export const MagicContextPage: React.FC = () => {
       mcApi.fetchUserMemoryCandidates({ limit: PANEL_LIMIT }),
       mcApi.fetchWorkspaces({ limit: PANEL_LIMIT }),
       mcApi.fetchMuralManifests({ limit: PANEL_LIMIT }),
+      mcApi.fetchProjects({ limit: 30 }),
       mcApi.fetchConfig(),
       mcApi.fetchLogs(),
     ]);
@@ -146,6 +138,7 @@ export const MagicContextPage: React.FC = () => {
     const userMemoryCandidatesOk = userMemoryCandidates.status === 'fulfilled' && !('gated' in userMemoryCandidates.value) ? userMemoryCandidates.value : null;
     const workspacesOk = workspaces.status === 'fulfilled' && !('gated' in workspaces.value) ? workspaces.value : null;
     const muralsOk = murals.status === 'fulfilled' && !('gated' in murals.value) ? murals.value : null;
+    const projectsOk = projects.status === 'fulfilled' && !('gated' in projects.value) ? projects.value : null;
     let nextTimeline: McCacheTimeline | null = null;
     const firstSession = sessionsOk && sessionsOk.items.length > 0 ? sessionsOk.items[0] : null;
     if (firstSession) {
@@ -160,6 +153,7 @@ export const MagicContextPage: React.FC = () => {
     }
     setTimeline(nextTimeline);
     setPanels({
+      projects: projectsOk,
       sessions: sessionsOk,
       cache: cacheOk,
       dreams: dreamsOk,
@@ -178,7 +172,7 @@ export const MagicContextPage: React.FC = () => {
     setView({ status: 'loading' });
     setLoadMoreError(false);
     setOverview(null);
-    setPanels({ sessions: null, cache: null, dreams: null, primers: null, primerCandidates: null, userMemories: null, userMemoryCandidates: null, workspaces: null, murals: null, config: null, logs: null });
+    setPanels({ projects: null, sessions: null, cache: null, dreams: null, primers: null, primerCandidates: null, userMemories: null, userMemoryCandidates: null, workspaces: null, murals: null, config: null, logs: null });
     setTimeline(null);
     try {
       const meta = await mcApi.fetchMeta();
@@ -336,7 +330,7 @@ export const MagicContextPage: React.FC = () => {
       ) : null}
       {timeline ? (
         <SettingsSection title={t('settings.magicContext.section.cacheTimeline')}>
-          {timeline.events.length === 0 ? listPanel(true) : (
+          {(timeline.summary.warning ?? 0) + (timeline.summary.bust ?? 0) + (timeline.summary['full-bust'] ?? 0) + (timeline.summary.unknown ?? 0) > 0 ? (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-x-5 gap-y-1">
                 {SEVERITY_ORDER.map((severity) => (
@@ -358,6 +352,8 @@ export const MagicContextPage: React.FC = () => {
                 ))}
               </ul>
             </div>
+          ) : (
+            <p className="typography-body text-muted-foreground">{t('settings.magicContext.cacheNoActionable')}</p>
           )}
         </SettingsSection>
       ) : null}
@@ -507,6 +503,27 @@ export const MagicContextPage: React.FC = () => {
     return (
       <>
         {overviewBlock}
+      {panels.projects ? (
+        <SettingsSection title={t('settings.magicContext.section.projects')}>
+          {panels.projects.items.length === 0 ? listPanel(true) : (
+            <ul className="space-y-4">
+              {panels.projects.items.map((project) => (
+                <li key={project.projectPath} className="space-y-1">
+                  <p className="typography-body text-foreground">{project.projectPath}</p>
+                  <p className="typography-caption text-muted-foreground">
+                    {[`${project.active} active`, `${project.permanent} permanent`, `${project.archived} archived`].join(' · ')}
+                  </p>
+                  {project.categories.length > 0 ? (
+                    <p className="typography-caption text-muted-foreground">
+                      {project.categories.slice(0, 4).map((entry) => `${entry.category}×${entry.count}`).join(' · ')}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </SettingsSection>
+      ) : null}
         <SettingsSection divider={false} title={t('settings.page.magicContext.title')}>
           {items.length === 0 ? (
             <p className="typography-body text-muted-foreground">{t('settings.magicContext.empty')}</p>

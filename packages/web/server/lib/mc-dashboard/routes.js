@@ -96,6 +96,22 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       respondError(res, error);
     }
   });
+  app.get('/api/openchamber/mc/projects', async (req, res) => {
+    const limit = readNonNegativeInt(readSingleQueryValue(req.query.limit));
+    if (!limit.ok || (limit.value !== undefined && (limit.value < 1 || limit.value > 500))) {
+      res.status(400).json({ error: 'limit must be an integer between 1 and 500' });
+      return;
+    }
+    const options = {};
+    if (limit.value !== undefined) {
+      options.limit = limit.value;
+    }
+    try {
+      respondResult(res, await runtime.listProjects(options));
+    } catch (error) {
+      respondError(res, error);
+    }
+  });
   app.get('/api/openchamber/mc/workspaces', async (req, res) => {
     const parsed = parseLimitOffset(req);
     if (!parsed.ok) {

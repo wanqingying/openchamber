@@ -2312,4 +2312,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': 'Całkowite chybienie',
   'settings.magicContext.severity.info': 'Info',
   'settings.magicContext.severity.unknown': 'Nieznane',
+  'settings.magicContext.section.projects': 'Projekty',
+  'settings.magicContext.cacheNoActionable': 'Nie wykryto problemów z pamięcią podręczną dla najnowszej sesji.',
 };

@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': '完全失敗',
   'settings.magicContext.severity.info': '情報',
   'settings.magicContext.severity.unknown': '不明',
+  'settings.magicContext.section.projects': 'プロジェクト',
+  'settings.magicContext.cacheNoActionable': '最新のセッションにキャッシュの問題は検出されませんでした。',
 } as const;

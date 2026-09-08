@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': '완전 실패',
   'settings.magicContext.severity.info': '정보',
   'settings.magicContext.severity.unknown': '알 수 없음',
+  'settings.magicContext.section.projects': '프로젝트',
+  'settings.magicContext.cacheNoActionable': '최신 세션에서 캐시 문제가 감지되지 않았습니다.',
 } as const;

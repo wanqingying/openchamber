@@ -9,12 +9,13 @@ import { sessionInsight } from './queries/session-insight.js';
 import { cacheSessionSummary } from './queries/cache.js';
 import { listDreamRuns, dreamRunDetail } from './queries/dreamer.js';
 import { listPrimers, listUserMemories, listPrimerCandidates, listUserMemoryCandidates, listMuralManifests } from './queries/primers.js';
+import { projectMemoryStats } from './queries/projects.js';
 import { readFilePreview, resolveMagicContextLogPath, resolveUserConfigPath } from './queries/files.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
 export const MC_MAX_SUPPORTED_SCHEMA = 83;
 export const MC_FORK_VERSION_FLOOR = 10000;
-export const MC_DASHBOARD_BUILD = 5;
+export const MC_DASHBOARD_BUILD = 6;
 
 export const MC_UNAVAILABLE_MISSING_DB = 'missing-db';
 export const MC_UNAVAILABLE_SCHEMA_TOO_NEW = 'schema-too-new';
@@ -215,6 +216,7 @@ export const createMcDashboardRuntime = ({ env, homedir, tmpdir = () => '/tmp' }
     listDreamRuns: listFromContext(listDreamRuns),
     listPrimers: listFromContext(listPrimers),
     listUserMemories: listFromContext(listUserMemories),
+    listProjects: listFromContext(projectMemoryStats),
     listCacheSessions: listFromContext(cacheSessionSummary),
     listPrimerCandidates: listFromContext(listPrimerCandidates),
     listUserMemoryCandidates: listFromContext(listUserMemoryCandidates),

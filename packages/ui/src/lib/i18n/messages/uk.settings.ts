@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': 'Повний зрив',
   'settings.magicContext.severity.info': 'Інфо',
   'settings.magicContext.severity.unknown': 'Невідомо',
+  'settings.magicContext.section.projects': 'Проєкти',
+  'settings.magicContext.cacheNoActionable': 'Проблем із кешем для останнього сеансу не виявлено.',
 } as const;

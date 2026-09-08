@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': '完全未命中',
   'settings.magicContext.severity.info': '信息',
   'settings.magicContext.severity.unknown': '未知',
+  'settings.magicContext.section.projects': '项目',
+  'settings.magicContext.cacheNoActionable': '最新会话未检测到缓存问题。',
 } as const;

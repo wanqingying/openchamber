@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': 'Fallo total',
   'settings.magicContext.severity.info': 'Información',
   'settings.magicContext.severity.unknown': 'Desconocido',
+  'settings.magicContext.section.projects': 'Proyectos',
+  'settings.magicContext.cacheNoActionable': 'No se detectaron problemas de caché en la sesión más reciente.',
 } as const;

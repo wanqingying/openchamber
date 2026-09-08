@@ -2319,4 +2319,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': '完全未命中',
   'settings.magicContext.severity.info': '資訊',
   'settings.magicContext.severity.unknown': '未知',
+  'settings.magicContext.section.projects': '專案',
+  'settings.magicContext.cacheNoActionable': '最新工作階段未偵測到快取問題。',
 } as const;

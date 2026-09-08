@@ -2309,4 +2309,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': 'Full bust',
   'settings.magicContext.severity.info': 'Info',
   'settings.magicContext.severity.unknown': 'Unknown',
+  'settings.magicContext.section.projects': 'Projects',
+  'settings.magicContext.cacheNoActionable': 'No cache issues detected for the newest session (no misses or warnings to act on).',
 } as const;

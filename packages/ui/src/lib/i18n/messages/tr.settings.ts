@@ -2309,4 +2309,6 @@ export const settingsDict = {
   'settings.magicContext.severity.fullBust': 'Tam başarısız',
   'settings.magicContext.severity.info': 'Bilgi',
   'settings.magicContext.severity.unknown': 'Bilinmiyor',
+  'settings.magicContext.section.projects': 'Projeler',
+  'settings.magicContext.cacheNoActionable': 'En yeni oturumda önbellek sorunu algılanmadı.',
 };

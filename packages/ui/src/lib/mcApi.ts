@@ -105,6 +105,21 @@ export interface McWorkspace {
   memberCount: number;
 }
 
+export interface McProjectCategory {
+  category: string;
+  count: number;
+}
+
+export interface McProjectStat {
+  projectPath: string;
+  totalMemories: number;
+  active: number;
+  permanent: number;
+  archived: number;
+  lastUpdatedAt: number | null;
+  categories: McProjectCategory[];
+}
+
 export interface McPage<T> {
   total: number;
   limit: number;
@@ -312,6 +327,21 @@ const workspaceItemSchema = z.object({
   updatedAt: z.number().finite(),
   shareCategories: z.string(),
   memberCount: z.number().int().nonnegative(),
+});
+
+const projectCategorySchema = z.object({
+  category: z.string(),
+  count: z.number().int().nonnegative(),
+});
+
+const projectItemSchema = z.object({
+  projectPath: z.string(),
+  totalMemories: z.number().int().nonnegative(),
+  active: z.number().int().nonnegative(),
+  permanent: z.number().int().nonnegative(),
+  archived: z.number().int().nonnegative(),
+  lastUpdatedAt: z.number().finite().nullish().transform((value) => value ?? null),
+  categories: z.array(projectCategorySchema),
 });
 
 const cacheSessionItemSchema = z.object({
@@ -545,6 +575,9 @@ export const createMcApi = (fetcher: McFetcher) => {
   const fetchWorkspaces = (options: { limit?: number; offset?: number } = {}) =>
     readList(`${BASE_PATH}/workspaces${listQuery(options)}`, workspaceItemSchema, 'Invalid Magic Context workspaces payload');
 
+  const fetchProjects = (options: { limit?: number } = {}) =>
+    readList(`${BASE_PATH}/projects${listQuery(options)}`, projectItemSchema, 'Invalid Magic Context projects payload');
+
   const fetchCacheSessions = (options: { limit?: number; offset?: number } = {}) =>
     readList(`${BASE_PATH}/cache/sessions${listQuery(options)}`, cacheSessionItemSchema, 'Invalid Magic Context cache payload');
 
@@ -588,6 +621,7 @@ export const createMcApi = (fetcher: McFetcher) => {
     fetchPrimers,
     fetchUserMemories,
     fetchWorkspaces,
+    fetchProjects,
     fetchCacheSessions,
     fetchCacheTimeline,
     fetchPrimerCandidates,
