@@ -96,6 +96,7 @@ export const CommandPalette: React.FC = () => {
   const shortcutOverrides = useUIStore((s) => s.shortcutOverrides);
   const openMultiRunLauncher = useUIStore((s) => s.openMultiRunLauncher);
   const setArchivePageOpen = useUIStore((s) => s.setArchivePageOpen);
+  const setMagicContextDashboardOpen = useUIStore((s) => s.setMagicContextDashboardOpen);
   const setProjectContextTab = useUIStore((s) => s.setProjectContextTab);
 
   const openNewSessionDraft = useSessionUIStore((s) => s.openNewSessionDraft);
@@ -322,6 +323,17 @@ export const CommandPalette: React.FC = () => {
         onSelect: run(() => {
           setSessionSwitcherOpen(false);
           setArchivePageOpen(true);
+        }),
+      },
+      {
+        id: 'open-magic-context',
+        secondary: true,
+        title: t('commandPalette.item.openMagicContext'),
+        icon: <Icon name="pie-chart" className="mr-2 h-4 w-4" />,
+        searchText: t('commandPalette.item.openMagicContext'),
+        onSelect: run(() => {
+          setSessionSwitcherOpen(false);
+          setMagicContextDashboardOpen(true);
         }),
       },
       {

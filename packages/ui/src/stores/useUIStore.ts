@@ -810,6 +810,7 @@ interface UIStore {
   isArchivePageOpen: boolean;
   worktreesPageProjectId: string | null;
   isSettingsDialogOpen: boolean;
+  isMagicContextDashboardOpen: boolean;
   isNewWorktreeDialogOpen: boolean;
   isModelSelectorOpen: boolean;
   sidebarSection: SidebarSection;
@@ -1027,6 +1028,7 @@ interface UIStore {
   /** Close every full-page surface (Scheduled, Archive, Worktrees, Multi-run). */
   closeMainSurfaces: () => void;
   setSettingsDialogOpen: (open: boolean) => void;
+  setMagicContextDashboardOpen: (open: boolean) => void;
   setNewWorktreeDialogOpen: (open: boolean) => void;
   setModelSelectorOpen: (open: boolean) => void;
   applyTheme: () => void;
@@ -1210,6 +1212,7 @@ export const useUIStore = create<UIStore>()(
         isArchivePageOpen: false,
         worktreesPageProjectId: null,
         isSettingsDialogOpen: false,
+        isMagicContextDashboardOpen: false,
         isNewWorktreeDialogOpen: false,
         isModelSelectorOpen: false,
         sidebarSection: 'sessions',
@@ -1964,6 +1967,16 @@ export const useUIStore = create<UIStore>()(
               return { isSettingsDialogOpen: true };
             }
             return { isSettingsDialogOpen: true, settingsHasOpenedOnce: true };
+          });
+        },
+
+        setMagicContextDashboardOpen: (open) => {
+          set((state) => {
+            const changes = { isMagicContextDashboardOpen: open };
+            if (open) {
+              return { ...changes, isSettingsDialogOpen: false };
+            }
+            return changes;
           });
         },
 

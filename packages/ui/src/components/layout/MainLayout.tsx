@@ -15,6 +15,7 @@ import { SessionWorktreeMoveConfirmDialog } from '@/components/session/sidebar/S
 import { ScheduledTasksDialog } from '@/components/session/ScheduledTasksDialog';
 import { ArchiveView } from '@/components/views/ArchiveView';
 import { WorktreesView } from '@/components/views/WorktreesView';
+import { MagicContextDashboard } from '@/components/views/MagicContextDashboard';
 import { DiffWorkerProvider } from '@/contexts/DiffWorkerProvider';
 import { MultiRunLauncher } from '@/components/multirun';
 
@@ -62,6 +63,7 @@ export const MainLayout: React.FC = () => {
     }, [isSettingsDialogOpen]);
     const isMultiRunLauncherOpen = useUIStore((state) => state.isMultiRunLauncherOpen);
     const setMultiRunLauncherOpen = useUIStore((state) => state.setMultiRunLauncherOpen);
+    const isMagicContextDashboardOpen = useUIStore((state) => state.isMagicContextDashboardOpen);
     const multiRunLauncherPrefillPrompt = useUIStore((state) => state.multiRunLauncherPrefillPrompt);
     const isScheduledTasksPageOpen = useUIStore((state) => state.isScheduledTasksDialogOpen);
     const isArchivePageOpen = useUIStore((state) => state.isArchivePageOpen);
@@ -69,7 +71,7 @@ export const MainLayout: React.FC = () => {
     // Any full-page surface replacing the chat area. While open, the chat is
     // fully hidden (not just covered) so none of its floating chrome bleeds
     // through, and selecting a session or draft anywhere closes the surface.
-    const isSurfacePageOpen = isScheduledTasksPageOpen || isArchivePageOpen || Boolean(worktreesPageProjectId) || isMultiRunLauncherOpen;
+    const isSurfacePageOpen = isScheduledTasksPageOpen || isArchivePageOpen || Boolean(worktreesPageProjectId) || isMultiRunLauncherOpen || isMagicContextDashboardOpen;
 
     React.useEffect(() => {
         const closeSurfacePages = () => useUIStore.getState().closeMainSurfaces();
@@ -158,6 +160,7 @@ export const MainLayout: React.FC = () => {
                                             <ErrorBoundary><ScheduledTasksDialog /></ErrorBoundary>
                                             <ErrorBoundary><ArchiveView /></ErrorBoundary>
                                             <ErrorBoundary><WorktreesView /></ErrorBoundary>
+                                            {isMagicContextDashboardOpen && <ErrorBoundary><MagicContextDashboard /></ErrorBoundary>}
                                         </main>
                                         <ContextPanel />
                                     </div>

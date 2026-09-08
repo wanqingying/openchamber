@@ -3341,4 +3341,5 @@ export const dict = {
   'settings.mcp.page.connection.kindLink': 'Lien',
   'settings.mcp.page.connection.hintCommand': 'S’exécute sur cette machine. Collez une commande entière : elle est découpée en un argument par ligne.',
   'settings.mcp.page.connection.hintLink': 'Se connecte à un serveur hébergé par quelqu’un d’autre. Collez son adresse https.',
+  'commandPalette.item.openMagicContext': 'Ouvrir Magic Context',
 } as const;
