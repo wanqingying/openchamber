@@ -2294,4 +2294,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': 'この環境では Magic Context データを利用できません（{reason}）。',
   'settings.magicContext.loadMore': 'さらに読み込む',
   'settings.magicContext.shownOfTotal': '{total} 件中 {shown} 件を表示中',
+  'settings.magicContext.overview.title': '概要',
+  'settings.magicContext.stat.totalMemories': '合計',
+  'settings.magicContext.stat.currentMemories': '現在有効',
+  'settings.magicContext.stat.projects': 'プロジェクト',
+  'settings.magicContext.stat.categories': 'カテゴリ',
 } as const;

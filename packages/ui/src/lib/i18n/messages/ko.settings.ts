@@ -2294,4 +2294,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': '이 환경에서는 Magic Context 데이터를 사용할 수 없습니다({reason}).',
   'settings.magicContext.loadMore': '더 불러오기',
   'settings.magicContext.shownOfTotal': '전체 {total}개 중 {shown}개 표시',
+  'settings.magicContext.overview.title': '개요',
+  'settings.magicContext.stat.totalMemories': '전체',
+  'settings.magicContext.stat.currentMemories': '현재 사용 중',
+  'settings.magicContext.stat.projects': '프로젝트',
+  'settings.magicContext.stat.categories': '카테고리',
 } as const;

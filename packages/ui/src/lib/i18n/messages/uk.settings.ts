@@ -2294,4 +2294,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': 'Дані Magic Context недоступні в цьому середовищі ({reason}).',
   'settings.magicContext.loadMore': 'Завантажити ще',
   'settings.magicContext.shownOfTotal': 'Показано {shown} із {total}',
+  'settings.magicContext.overview.title': 'Огляд',
+  'settings.magicContext.stat.totalMemories': 'Разом',
+  'settings.magicContext.stat.currentMemories': 'Актуальні',
+  'settings.magicContext.stat.projects': 'Проєкти',
+  'settings.magicContext.stat.categories': 'Категорії',
 } as const;

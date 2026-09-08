@@ -47,6 +47,13 @@ export interface McMemoriesPage {
   items: McMemoryItem[];
 }
 
+export interface McOverview {
+  totalMemories: number;
+  currentMemories: number;
+  projects: number;
+  categories: number;
+}
+
 export interface McMemoriesOptions {
   projectPath?: string;
   category?: string;
@@ -125,12 +132,20 @@ const memoriesPageSchema = z.object({
   items: z.array(memoryItemSchema),
 });
 
+const overviewSchema = z.object({
+  totalMemories: z.number().int().nonnegative(),
+  currentMemories: z.number().int().nonnegative(),
+  projects: z.number().int().nonnegative(),
+  categories: z.number().int().nonnegative(),
+});
+
 const errorPayloadSchema = z.object({
   error: z.string().optional(),
 });
 
 const metaResponseSchema = z.union([metaOkSchema, gatedSchema]);
 const memoriesResponseSchema = z.union([memoriesPageSchema, gatedSchema]);
+const overviewResponseSchema = z.union([overviewSchema, gatedSchema]);
 
 const buildGated = (value: z.infer<typeof gatedSchema>): McGated => {
   const result: McGated = { gated: true, reason: value.reason };
@@ -230,7 +245,26 @@ export const createMcApi = (fetcher: McFetcher) => {
     return buildGated(data);
   };
 
-  return { fetchMeta, fetchMemories };
+  const fetchOverview = async (
+    options: { signal?: AbortSignal } = {},
+  ): Promise<McOverview | McGated> => {
+    const response = await fetcher(`${BASE_PATH}/overview`, { cache: 'no-store', signal: options.signal });
+    if (!response.ok) {
+      const detail = await readErrorText(response);
+      throw new Error(detail || `Magic Context request failed (${response.status})`);
+    }
+    const data = parseBody(
+      overviewResponseSchema,
+      await response.text(),
+      'Invalid Magic Context overview payload',
+    );
+    if ('totalMemories' in data) {
+      return data;
+    }
+    return buildGated(data);
+  };
+
+  return { fetchMeta, fetchMemories, fetchOverview };
 };
 
 export type McApi = ReturnType<typeof createMcApi>;

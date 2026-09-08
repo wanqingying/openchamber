@@ -2294,4 +2294,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': '此环境下 Magic Context 数据不可用（{reason}）。',
   'settings.magicContext.loadMore': '加载更多',
   'settings.magicContext.shownOfTotal': '显示 {total} 条中的 {shown} 条',
+  'settings.magicContext.overview.title': '概览',
+  'settings.magicContext.stat.totalMemories': '总数',
+  'settings.magicContext.stat.currentMemories': '当前有效',
+  'settings.magicContext.stat.projects': '项目',
+  'settings.magicContext.stat.categories': '类别',
 } as const;

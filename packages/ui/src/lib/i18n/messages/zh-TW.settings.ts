@@ -2294,4 +2294,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': '此環境下無法使用 Magic Context 資料（{reason}）。',
   'settings.magicContext.loadMore': '載入更多',
   'settings.magicContext.shownOfTotal': '顯示 {total} 筆中的 {shown} 筆',
+  'settings.magicContext.overview.title': '總覽',
+  'settings.magicContext.stat.totalMemories': '總數',
+  'settings.magicContext.stat.currentMemories': '目前有效',
+  'settings.magicContext.stat.projects': '專案',
+  'settings.magicContext.stat.categories': '類別',
 } as const;

@@ -4,7 +4,7 @@ import { SettingsSection } from '@/components/sections/shared/SettingsSection';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n';
 import { mcApi } from '@/lib/mcApiInstance';
-import type { McGateReason, McGated, McMemoryItem } from '@/lib/mcApi';
+import type { McGateReason, McGated, McMemoryItem, McOverview } from '@/lib/mcApi';
 
 type View =
   | { status: 'loading' }
@@ -31,6 +31,7 @@ const gatedView = (gated: McGated): Extract<View, { status: 'gated' }> => {
 export const MagicContextPage: React.FC = () => {
   const { t } = useI18n();
   const [view, setView] = React.useState<View>({ status: 'loading' });
+  const [overview, setOverview] = React.useState<McOverview | null>(null);
   const [items, setItems] = React.useState<McMemoryItem[]>([]);
   const [total, setTotal] = React.useState(0);
   const [loadMoreError, setLoadMoreError] = React.useState(false);
@@ -38,19 +39,29 @@ export const MagicContextPage: React.FC = () => {
   const loadFirstPage = React.useCallback(async () => {
     setView({ status: 'loading' });
     setLoadMoreError(false);
+    setOverview(null);
     try {
       const meta = await mcApi.fetchMeta();
       if (meta.gated) {
         setView(gatedView(meta));
         return;
       }
-      const memories = await mcApi.fetchMemories({ limit: PAGE_SIZE });
-      if ('gated' in memories) {
-        setView(gatedView(memories));
+      const [memories, overviewData] = await Promise.all([
+        mcApi.fetchMemories({ limit: PAGE_SIZE }),
+        mcApi.fetchOverview(),
+      ]);
+      const gate = 'gated' in memories ? memories : 'totalMemories' in overviewData ? null : overviewData;
+      if (gate) {
+        setView(gatedView(gate));
         return;
       }
-      setItems(memories.items);
-      setTotal(memories.total);
+      if ('totalMemories' in overviewData) {
+        setOverview(overviewData);
+      }
+      if (!('gated' in memories)) {
+        setItems(memories.items);
+        setTotal(memories.total);
+      }
       setView({ status: 'ready' });
     } catch {
       setView({ status: 'error' });
@@ -117,36 +128,64 @@ export const MagicContextPage: React.FC = () => {
         </div>
       );
     }
+    const overviewBlock = overview ? (
+      <div className="space-y-2">
+        <p className="typography-body font-medium text-foreground">{t('settings.magicContext.overview.title')}</p>
+        <div className="flex flex-wrap gap-x-8 gap-y-2">
+          {(
+            [
+              [overview.totalMemories, t('settings.magicContext.stat.totalMemories')],
+              [overview.currentMemories, t('settings.magicContext.stat.currentMemories')],
+              [overview.projects, t('settings.magicContext.stat.projects')],
+              [overview.categories, t('settings.magicContext.stat.categories')],
+            ] as const
+          ).map(([value, label]) => (
+            <div key={label} className="flex items-baseline gap-1.5">
+              <span className="text-lg font-semibold tabular-nums text-foreground">{value}</span>
+              <span className="typography-caption text-muted-foreground">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null;
     if (items.length === 0) {
-      return <p className="typography-body text-muted-foreground">{t('settings.magicContext.empty')}</p>;
+      return (
+        <div className="space-y-4">
+          {overviewBlock}
+          <p className="typography-body text-muted-foreground">{t('settings.magicContext.empty')}</p>
+        </div>
+      );
     }
     const hasMore = items.length < total;
     return (
-      <div className="space-y-3">
-        <p className="typography-caption text-muted-foreground">
-          {t('settings.magicContext.shownOfTotal', {
-            shown: String(items.length),
-            total: String(total),
-          })}
-        </p>
-        <ul className="space-y-4">
-          {items.map((item) => (
-            <li key={item.id} className="space-y-1">
-              <p className="typography-body text-foreground">{item.contentExcerpt ?? ''}</p>
-              <p className="typography-caption text-muted-foreground">
-                {item.category} · {item.projectPath} · {item.status}
-              </p>
-            </li>
-          ))}
-        </ul>
-        {hasMore ? (
-          <div className="flex flex-col items-start gap-2">
-            {loadMoreError ? (
-              <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
-            ) : null}
-            <Button variant="secondary" size="sm" onClick={loadMore}>{t('settings.magicContext.loadMore')}</Button>
-          </div>
-        ) : null}
+      <div className="space-y-4">
+        {overviewBlock}
+        <div className="space-y-3">
+          <p className="typography-caption text-muted-foreground">
+            {t('settings.magicContext.shownOfTotal', {
+              shown: String(items.length),
+              total: String(total),
+            })}
+          </p>
+          <ul className="space-y-4">
+            {items.map((item) => (
+              <li key={item.id} className="space-y-1">
+                <p className="typography-body text-foreground">{item.contentExcerpt ?? ''}</p>
+                <p className="typography-caption text-muted-foreground">
+                  {item.category} · {item.projectPath} · {item.status}
+                </p>
+              </li>
+            ))}
+          </ul>
+          {hasMore ? (
+            <div className="flex flex-col items-start gap-2">
+              {loadMoreError ? (
+                <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
+              ) : null}
+              <Button variant="secondary" size="sm" onClick={loadMore}>{t('settings.magicContext.loadMore')}</Button>
+            </div>
+          ) : null}
+        </div>
       </div>
     );
   };

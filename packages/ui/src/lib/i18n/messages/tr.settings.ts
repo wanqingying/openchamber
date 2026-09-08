@@ -2284,4 +2284,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': 'Magic Context verileri bu ortamda kullanılamıyor ({reason}).',
   'settings.magicContext.loadMore': 'Daha fazla yükle',
   'settings.magicContext.shownOfTotal': '{total} kayıttan {shown} gösteriliyor',
+  'settings.magicContext.overview.title': 'Genel Bakış',
+  'settings.magicContext.stat.totalMemories': 'Toplam',
+  'settings.magicContext.stat.currentMemories': 'Geçerli',
+  'settings.magicContext.stat.projects': 'Projeler',
+  'settings.magicContext.stat.categories': 'Kategoriler',
 };

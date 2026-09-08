@@ -2287,4 +2287,9 @@ export const settingsDict = {
   'settings.magicContext.gate.unavailable': 'Dane Magic Context są niedostępne w tym środowisku ({reason}).',
   'settings.magicContext.loadMore': 'Wczytaj więcej',
   'settings.magicContext.shownOfTotal': 'Pokazano {shown} z {total}',
+  'settings.magicContext.overview.title': 'Przegląd',
+  'settings.magicContext.stat.totalMemories': 'Razem',
+  'settings.magicContext.stat.currentMemories': 'Obecne',
+  'settings.magicContext.stat.projects': 'Projekty',
+  'settings.magicContext.stat.categories': 'Kategorie',
 };

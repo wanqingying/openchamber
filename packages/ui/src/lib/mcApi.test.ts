@@ -140,6 +140,40 @@ describe('mcApi', () => {
     expect(calls).toEqual(['/api/openchamber/mc/memories?project=%2Fp&category=work&limit=25']);
   });
 
+  test('parses an available overview payload and a gated one', async () => {
+    const api = createMcApi(createStub());
+    stubResponses([Promise.resolve(textResponse(200, JSON.stringify({
+      totalMemories: 136,
+      currentMemories: 96,
+      projects: 4,
+      categories: 5,
+    })))]);
+    const result = await api.fetchOverview();
+    expect('gated' in result).toBe(false);
+    if (!('gated' in result)) {
+      expect(result.totalMemories).toBe(136);
+      expect(result.currentMemories).toBe(96);
+      expect(result.projects).toBe(4);
+      expect(result.categories).toBe(5);
+    }
+
+    stubResponses([Promise.resolve(textResponse(200, JSON.stringify({
+      available: false,
+      reason: 'missing-db',
+    })))]);
+    const gated = await api.fetchOverview();
+    expect('gated' in gated).toBe(true);
+    if ('gated' in gated) {
+      expect(gated.reason).toBe('missing-db');
+    }
+  });
+
+  test('rejects a malformed overview payload', async () => {
+    const api = createMcApi(createStub());
+    stubResponses([Promise.resolve(textResponse(200, JSON.stringify({ totalMemories: 1 })))]);
+    await expect(api.fetchOverview()).rejects.toThrow('Invalid');
+  });
+
   test('treats an unparseable body as a fetch-level failure', async () => {
     const api = createMcApi(createStub());
     stubResponses([Promise.resolve(malformedTextResponse)]);
