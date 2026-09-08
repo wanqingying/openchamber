@@ -2292,4 +2292,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': '未找到 Magic Context 数据。请先在受管 OpenCode 中安装并启用 magic-context 插件，然后开始一个会话。',
   'settings.magicContext.gate.schemaTooNew': '这份 Magic Context 数据由更新的插件写入：schema {schemaVersion} 超出支持上限 {maxSupportedSchema}（插件 {targetMcVersion} 或更早）。请降级插件或升级本版本。',
   'settings.magicContext.gate.unavailable': '此环境下 Magic Context 数据不可用（{reason}）。',
+  'settings.magicContext.loadMore': '加载更多',
+  'settings.magicContext.shownOfTotal': '显示 {total} 条中的 {shown} 条',
 } as const;

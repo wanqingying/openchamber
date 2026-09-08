@@ -2285,4 +2285,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': 'Nie znaleziono danych Magic Context. Zainstaluj i włącz plugin magic-context w zarządzanym OpenCode, a następnie uruchom sesję.',
   'settings.magicContext.gate.schemaTooNew': 'Te dane Magic Context zostały zapisane przez nowszy plugin: schemat {schemaVersion} przekracza obsługiwany {maxSupportedSchema} (plugin {targetMcVersion} lub nowszy). Zdegraduj plugin lub zaktualizuj tę kompilację.',
   'settings.magicContext.gate.unavailable': 'Dane Magic Context są niedostępne w tym środowisku ({reason}).',
+  'settings.magicContext.loadMore': 'Wczytaj więcej',
+  'settings.magicContext.shownOfTotal': 'Pokazano {shown} z {total}',
 };

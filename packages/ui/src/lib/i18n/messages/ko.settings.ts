@@ -2292,4 +2292,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': 'Magic Context 데이터가 없습니다. 관리 대상 OpenCode에 magic-context 플러그인을 설치하고 활성화한 다음 세션을 시작하세요.',
   'settings.magicContext.gate.schemaTooNew': '이 Magic Context 데이터는 더 새로운 플러그인으로 작성되었습니다: 스키마 {schemaVersion}가 지원 한도 {maxSupportedSchema}를 초과합니다(플러그인 {targetMcVersion} 이하). 플러그인을 낮추거나 이 빌드를 업데이트하세요.',
   'settings.magicContext.gate.unavailable': '이 환경에서는 Magic Context 데이터를 사용할 수 없습니다({reason}).',
+  'settings.magicContext.loadMore': '더 불러오기',
+  'settings.magicContext.shownOfTotal': '전체 {total}개 중 {shown}개 표시',
 } as const;

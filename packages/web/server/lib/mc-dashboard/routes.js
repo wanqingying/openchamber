@@ -86,4 +86,18 @@ export const registerMcDashboardRoutes = (app, { runtime } = {}) => {
       });
     }
   });
+  app.get('/api/openchamber/mc/overview', async (_req, res) => {
+    try {
+      const result = await runtime.overview();
+      if (!result.ok) {
+        res.json(result.payload ?? result);
+        return;
+      }
+      res.json(result.data);
+    } catch (error) {
+      res.status(500).json({
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
 };

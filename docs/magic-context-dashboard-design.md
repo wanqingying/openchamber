@@ -133,3 +133,17 @@
 - 容器内跑 OpenChamber（web），managed OpenCode 装 0.41.4 插件并产生数据后，浏览器可从 MC 入口浏览项目/记忆/会话/cache/dreamer/config/logs。
 - 库缺失 / schema >84 / 库损坏三种情况页面分别给引导/提示/错误文案，不渲染假数据，不崩。
 - 本 fork 不写一行 magic-context 代码；零新增包依赖；`meta` 门控与 queries 测试全绿；面板过运行时契约检查（web + Electron）。
+
+## 10. 手动验证清单（容器 / web）
+
+开发用端口 **3000**（`OPENCHAMBER_PORT=3000`，见 CONTRIBUTING Dev Scripts）。
+
+1. 环境共享确认：OpenChamber 服务器与它 spawn 的 OpenCode 在同一容器/同一 HOME。
+2. 在 managed OpenCode 中安装并启用 magic-context 插件 0.41.4（用户级安装），产生至少一次会话/记忆。
+3. `OPENCHAMBER_PORT=3000 bun run dev`（或 Electron `bun run electron:dev`），打开 设置 → Magic Context：
+   - 有数据：显示 "Showing N of M" + 记忆列表，点 Load more 分页追加；
+   - 无数据（插件未启用）：显示 missing-db 引导文案；
+   - schema > 84（插件比 0.41.4 新）：显示 schema-too-new 降级提示。
+4. 接口冒烟（同机）：`curl http://localhost:3000/api/openchamber/mc/meta`、`/memories?limit=10`、`/overview`（已登录会话后）。
+5. 异常态：临时把 `context.db` 改名 → missing-db；写入超 84 的假 schema → schema-too-new；写入损坏文件 → open-failed 提示，页面不崩、不显示假空列表。
+6. 降级自检：把插件换成更新版本再回来 → 页面仍按门控提示，绝不代跑迁移。

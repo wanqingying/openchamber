@@ -2292,4 +2292,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': 'Даних Magic Context не знайдено. Установіть і увімкніть плагін magic-context у керованому OpenCode, а потім почніть сеанс.',
   'settings.magicContext.gate.schemaTooNew': 'Ці дані Magic Context записав новіший плагін: схему {schemaVersion} перевищено, підтримується до {maxSupportedSchema} (плагін {targetMcVersion} або старіший). Знизьте версію плагіна або оновіть цю збірку.',
   'settings.magicContext.gate.unavailable': 'Дані Magic Context недоступні в цьому середовищі ({reason}).',
+  'settings.magicContext.loadMore': 'Завантажити ще',
+  'settings.magicContext.shownOfTotal': 'Показано {shown} із {total}',
 } as const;

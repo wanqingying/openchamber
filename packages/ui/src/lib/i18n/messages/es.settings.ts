@@ -2292,4 +2292,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': 'No se encontraron datos de Magic Context. Instala y activa el plugin magic-context en el OpenCode gestionado y luego inicia una sesión.',
   'settings.magicContext.gate.schemaTooNew': 'Estos datos de Magic Context fueron escritos por un plugin más reciente: el esquema {schemaVersion} supera el admitido {maxSupportedSchema} (plugin {targetMcVersion} o anterior). Degrada el plugin o actualiza esta compilación.',
   'settings.magicContext.gate.unavailable': 'Los datos de Magic Context no están disponibles en este entorno ({reason}).',
+  'settings.magicContext.loadMore': 'Cargar más',
+  'settings.magicContext.shownOfTotal': 'Mostrando {shown} de {total}',
 } as const;

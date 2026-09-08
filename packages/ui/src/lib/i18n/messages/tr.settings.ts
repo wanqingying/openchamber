@@ -2282,4 +2282,6 @@ export const settingsDict = {
   'settings.magicContext.gate.missingDb': 'Magic Context verisi bulunamadı. Yönetilen OpenCode içinde magic-context eklentisini kurun ve etkinleştirin, ardından bir oturum başlatın.',
   'settings.magicContext.gate.schemaTooNew': 'Bu Magic Context verileri daha yeni bir eklenti tarafından yazılmış: {schemaVersion} şeması desteklenen {maxSupportedSchema} değerini aşıyor (eklenti {targetMcVersion} veya daha eski). Eklentiyi düşürün veya bu derlemeyi güncelleyin.',
   'settings.magicContext.gate.unavailable': 'Magic Context verileri bu ortamda kullanılamıyor ({reason}).',
+  'settings.magicContext.loadMore': 'Daha fazla yükle',
+  'settings.magicContext.shownOfTotal': '{total} kayıttan {shown} gösteriliyor',
 };

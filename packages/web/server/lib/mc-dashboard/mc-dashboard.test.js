@@ -373,3 +373,54 @@ describe('memories', () => {
     expect(good.payload.items[0].contentExcerpt).toBe('only');
   });
 });
+
+describe('overview', () => {
+  it('aggregates memory counts from the plugin table', async () => {
+    const storageDir = makeTempDir();
+    const dbPath = path.join(storageDir, 'context.db');
+    const opened = await openMagicContextDatabaseForWrite({ dbPath });
+    expect(opened.ok).toBe(true);
+    try {
+      const db = opened.db;
+      db.exec(`
+        CREATE TABLE memories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          project_path TEXT NOT NULL,
+          category TEXT NOT NULL,
+          content TEXT NOT NULL,
+          status TEXT DEFAULT 'active'
+        );
+      `);
+      const insert = db.prepare('INSERT INTO memories (project_path, category, content, status) VALUES (?, ?, ?, ?)');
+      insert.run('/p1', 'work', 'a', 'active');
+      insert.run('/p1', 'work', 'b', 'archived');
+      insert.run('/p2', 'personal', 'c', 'active');
+    } finally {
+      opened.db.close();
+    }
+    const runtime = createMcDashboardRuntime({
+      env: { MAGIC_CONTEXT_STORAGE_DIR: storageDir },
+      homedir: () => '/home/tester',
+    });
+    const result = await runtime.overview();
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual({
+      totalMemories: 3,
+      activeMemories: 2,
+      projects: 2,
+      categories: 2,
+    });
+  });
+
+  it('returns the gating payload when the database is missing', async () => {
+    const storageDir = makeTempDir();
+    const runtime = createMcDashboardRuntime({
+      env: { MAGIC_CONTEXT_STORAGE_DIR: storageDir },
+      homedir: () => '/home/tester',
+    });
+    const result = await runtime.overview();
+    expect(result.ok).toBeUndefined();
+    expect(result.available).toBe(false);
+    expect(result.reason).toBe(MC_UNAVAILABLE_MISSING_DB);
+  });
+});

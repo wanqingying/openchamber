@@ -1,6 +1,7 @@
 import { dbFileExists, resolveMagicContextDbPath } from './paths.js';
 import { openMagicContextDatabase } from './sqlite.js';
 import { listMemories } from './queries/memories.js';
+import { memoryOverview } from './queries/overview.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
 export const MC_MAX_SUPPORTED_SCHEMA = 84;
@@ -80,6 +81,18 @@ export const openCheckedMagicContextDatabase = async ({ env, homedir }) => {
 };
 
 export const createMcDashboardRuntime = ({ env, homedir }) => {
+  const run = async (query) => {
+    const opened = await openCheckedMagicContextDatabase({ env, homedir });
+    if (!opened.ok) {
+      return opened.payload;
+    }
+    try {
+      return { ok: true, data: query(opened.db) };
+    } finally {
+      opened.db.close();
+    }
+  };
+
   const getMeta = async () => {
     const opened = await openCheckedMagicContextDatabase({ env, homedir });
     if (!opened.ok) {
@@ -98,16 +111,20 @@ export const createMcDashboardRuntime = ({ env, homedir }) => {
   };
 
   const listMemoriesRoute = async (options) => {
-    const opened = await openCheckedMagicContextDatabase({ env, homedir });
-    if (!opened.ok) {
-      return opened.payload;
+    const result = await run((db) => listMemories(db, options));
+    if (!result.ok) {
+      return result;
     }
-    try {
-      return { ok: true, data: listMemories(opened.db, options) };
-    } finally {
-      opened.db.close();
-    }
+    return { ok: true, data: result.data };
   };
 
-  return { getMeta, listMemories: listMemoriesRoute };
+  const overviewRoute = async () => {
+    const result = await run(memoryOverview);
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: result.data };
+  };
+
+  return { getMeta, listMemories: listMemoriesRoute, overview: overviewRoute };
 };

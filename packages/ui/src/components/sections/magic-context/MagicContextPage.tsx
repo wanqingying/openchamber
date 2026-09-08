@@ -4,111 +4,150 @@ import { SettingsSection } from '@/components/sections/shared/SettingsSection';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n';
 import { mcApi } from '@/lib/mcApiInstance';
-import type { McGateReason, McGated, McMemoriesPage } from '@/lib/mcApi';
+import type { McGateReason, McGated, McMemoryItem } from '@/lib/mcApi';
 
-type Phase =
-  | { kind: 'loading' }
-  | { kind: 'gated'; reason: McGateReason; schemaVersion?: number; maxSupportedSchema?: number; targetMcVersion?: string }
-  | { kind: 'ready'; page: McMemoriesPage }
-  | { kind: 'error' };
+type View =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'gated'; reason: McGateReason; schemaVersion?: number; maxSupportedSchema?: number; targetMcVersion?: string }
+  | { status: 'ready' };
 
-const gatedPhase = (gated: McGated): Extract<Phase, { kind: 'gated' }> => {
-  const phase: Extract<Phase, { kind: 'gated' }> = { kind: 'gated', reason: gated.reason };
+const PAGE_SIZE = 100;
+
+const gatedView = (gated: McGated): Extract<View, { status: 'gated' }> => {
+  const view: Extract<View, { status: 'gated' }> = { status: 'gated', reason: gated.reason };
   if (gated.schemaVersion !== undefined) {
-    phase.schemaVersion = gated.schemaVersion;
+    view.schemaVersion = gated.schemaVersion;
   }
   if (gated.maxSupportedSchema !== undefined) {
-    phase.maxSupportedSchema = gated.maxSupportedSchema;
+    view.maxSupportedSchema = gated.maxSupportedSchema;
   }
   if (gated.targetMcVersion !== undefined) {
-    phase.targetMcVersion = gated.targetMcVersion;
+    view.targetMcVersion = gated.targetMcVersion;
   }
-  return phase;
+  return view;
 };
 
 export const MagicContextPage: React.FC = () => {
   const { t } = useI18n();
-  const [phase, setPhase] = React.useState<Phase>({ kind: 'loading' });
+  const [view, setView] = React.useState<View>({ status: 'loading' });
+  const [items, setItems] = React.useState<McMemoryItem[]>([]);
+  const [total, setTotal] = React.useState(0);
+  const [loadMoreError, setLoadMoreError] = React.useState(false);
 
-  const load = React.useCallback(async () => {
-    setPhase({ kind: 'loading' });
+  const loadFirstPage = React.useCallback(async () => {
+    setView({ status: 'loading' });
+    setLoadMoreError(false);
     try {
       const meta = await mcApi.fetchMeta();
       if (meta.gated) {
-        setPhase(gatedPhase(meta));
+        setView(gatedView(meta));
         return;
       }
-      const memories = await mcApi.fetchMemories({ limit: 100 });
+      const memories = await mcApi.fetchMemories({ limit: PAGE_SIZE });
       if ('gated' in memories) {
-        setPhase(gatedPhase(memories));
+        setView(gatedView(memories));
         return;
       }
-      setPhase({ kind: 'ready', page: memories });
+      setItems(memories.items);
+      setTotal(memories.total);
+      setView({ status: 'ready' });
     } catch {
-      setPhase({ kind: 'error' });
+      setView({ status: 'error' });
     }
   }, []);
 
   React.useEffect(() => {
-    void load();
-  }, [load]);
+    void loadFirstPage();
+  }, [loadFirstPage]);
 
-  const renderGate = (phase: Extract<Phase, { kind: 'gated' }>) => {
-    if (phase.reason === 'missing-db') {
+  const loadMore = React.useCallback(async () => {
+    setLoadMoreError(false);
+    try {
+      const memories = await mcApi.fetchMemories({ limit: PAGE_SIZE, offset: items.length });
+      if ('gated' in memories || memories.items.length === 0) {
+        return;
+      }
+      setItems((previous) => [...previous, ...memories.items]);
+      setTotal(memories.total);
+    } catch {
+      setLoadMoreError(true);
+    }
+  }, [items.length]);
+
+  const renderGate = (view: Extract<View, { status: 'gated' }>) => {
+    if (view.reason === 'missing-db') {
       return <p className="typography-body text-muted-foreground">{t('settings.magicContext.gate.missingDb')}</p>;
     }
-    if (phase.reason === 'schema-too-new') {
+    if (view.reason === 'schema-too-new') {
       return (
         <p className="typography-body text-muted-foreground">
           {t('settings.magicContext.gate.schemaTooNew', {
-            schemaVersion: String(phase.schemaVersion ?? 0),
-            maxSupportedSchema: String(phase.maxSupportedSchema ?? 0),
-            targetMcVersion: phase.targetMcVersion ?? '',
+            schemaVersion: String(view.schemaVersion ?? 0),
+            maxSupportedSchema: String(view.maxSupportedSchema ?? 0),
+            targetMcVersion: view.targetMcVersion ?? '',
           })}
         </p>
       );
     }
     return (
       <p className="typography-body text-muted-foreground">
-        {t('settings.magicContext.gate.unavailable', { reason: phase.reason })}
+        {t('settings.magicContext.gate.unavailable', { reason: view.reason })}
       </p>
     );
   };
 
   const renderBody = () => {
-    if (phase.kind === 'loading') {
+    if (view.status === 'loading') {
       return <p className="typography-body text-muted-foreground">{t('settings.magicContext.loading')}</p>;
     }
-    if (phase.kind === 'error') {
+    if (view.status === 'error') {
       return (
         <div className="flex flex-col items-start gap-3">
           <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
-          <Button variant="secondary" size="sm" onClick={load}>{t('settings.magicContext.retry')}</Button>
+          <Button variant="secondary" size="sm" onClick={loadFirstPage}>{t('settings.magicContext.retry')}</Button>
         </div>
       );
     }
-    if (phase.kind === 'gated') {
+    if (view.status === 'gated') {
       return (
         <div className="flex flex-col items-start gap-3">
-          {renderGate(phase)}
-          <Button variant="secondary" size="sm" onClick={load}>{t('settings.magicContext.retry')}</Button>
+          {renderGate(view)}
+          <Button variant="secondary" size="sm" onClick={loadFirstPage}>{t('settings.magicContext.retry')}</Button>
         </div>
       );
     }
-    if (phase.page.items.length === 0) {
+    if (items.length === 0) {
       return <p className="typography-body text-muted-foreground">{t('settings.magicContext.empty')}</p>;
     }
+    const hasMore = items.length < total;
     return (
-      <ul className="space-y-4">
-        {phase.page.items.map((item) => (
-          <li key={item.id} className="space-y-1">
-            <p className="typography-body text-foreground">{item.contentExcerpt ?? ''}</p>
-            <p className="typography-caption text-muted-foreground">
-              {item.category} · {item.projectPath} · {item.status}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <div className="space-y-3">
+        <p className="typography-caption text-muted-foreground">
+          {t('settings.magicContext.shownOfTotal', {
+            shown: String(items.length),
+            total: String(total),
+          })}
+        </p>
+        <ul className="space-y-4">
+          {items.map((item) => (
+            <li key={item.id} className="space-y-1">
+              <p className="typography-body text-foreground">{item.contentExcerpt ?? ''}</p>
+              <p className="typography-caption text-muted-foreground">
+                {item.category} · {item.projectPath} · {item.status}
+              </p>
+            </li>
+          ))}
+        </ul>
+        {hasMore ? (
+          <div className="flex flex-col items-start gap-2">
+            {loadMoreError ? (
+              <p className="typography-body text-muted-foreground">{t('settings.magicContext.loadError')}</p>
+            ) : null}
+            <Button variant="secondary" size="sm" onClick={loadMore}>{t('settings.magicContext.loadMore')}</Button>
+          </div>
+        ) : null}
+      </div>
     );
   };
 
