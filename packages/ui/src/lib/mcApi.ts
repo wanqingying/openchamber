@@ -13,6 +13,8 @@ export interface McGated {
   gated: true;
   reason: McGateReason;
   schemaVersion?: number;
+  maxSupportedSchema?: number;
+  targetMcVersion?: string;
   detail?: string | null;
 }
 
@@ -76,6 +78,8 @@ const gatedSchema = z.object({
   available: z.literal(false),
   reason: gateReasonSchema,
   schemaVersion: z.number().finite().optional(),
+  maxSupportedSchema: z.number().finite().optional(),
+  targetMcVersion: z.string().optional(),
   detail: z.string().optional(),
 });
 
@@ -132,6 +136,12 @@ const buildGated = (value: z.infer<typeof gatedSchema>): McGated => {
   const result: McGated = { gated: true, reason: value.reason };
   if (value.schemaVersion !== undefined) {
     result.schemaVersion = value.schemaVersion;
+  }
+  if (value.maxSupportedSchema !== undefined) {
+    result.maxSupportedSchema = value.maxSupportedSchema;
+  }
+  if (value.targetMcVersion !== undefined) {
+    result.targetMcVersion = value.targetMcVersion;
   }
   if (value.detail !== undefined) {
     result.detail = value.detail;
