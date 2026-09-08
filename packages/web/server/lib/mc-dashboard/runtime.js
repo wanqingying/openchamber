@@ -10,7 +10,7 @@ import { listPrimers, listUserMemories } from './queries/primers.js';
 import { readFilePreview, resolveMagicContextLogPath, resolveUserConfigPath } from './queries/files.js';
 
 export const MC_TARGET_VERSION = '0.41.4';
-export const MC_MAX_SUPPORTED_SCHEMA = 84;
+export const MC_MAX_SUPPORTED_SCHEMA = 83;
 export const MC_FORK_VERSION_FLOOR = 10000;
 
 export const MC_UNAVAILABLE_MISSING_DB = 'missing-db';

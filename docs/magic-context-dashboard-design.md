@@ -9,7 +9,7 @@
 1. **两个项目都保持开源、直接使用**。magic-context **不 fork、不改其代码**，一律用开源发行版；之前"给插件加 RPC viewer 方法""抽 data-access 库 import"等需要改 magic-context 的路线**全部作废**。
 2. 引入 dashboard 的动机是：原版 Tauri dashboard 在**容器/无头环境用不了**，需要一个能在浏览器里复刻它检视能力的办法。
 3. OpenChamber 是维护者**个人 fork**，把 dashboard 面板放进 OpenChamber UI 是本次定制的目的。
-4. OpenChamber fork 侧**锁死一个 magic-context 版本**（当前基准 0.41.4，schema 上限 84）。之后升级插件由维护者在 OpenChamber 侧显式跟进。
+4. OpenChamber fork 侧**锁死一个 magic-context 版本**（当前基准 0.41.4，schema 上限 83）。之后升级插件由维护者在 OpenChamber 侧显式跟进。
 5. **版本对不上就用页面提示文案兜底**，不崩、不假数据。
 
 结论：数据通道回到"**OpenChamber 直接只读 `context.db`**"——这正是原版 dashboard（Rust `db.rs` 直读）被验证过的做法；schema 漂移风险靠"锁版本 + schema 版本门控 + 提示文案"控制。
@@ -21,7 +21,7 @@
 | 是否值得迁入 | 值得。OpenChamber 服务器与它管理的 OpenCode 同容器/同用户，天然能解析到同一份 `context.db`；web 端可访问即 dashboard 可访问，恰好补上容器场景。 |
 | 数据通道 | OpenChamber 服务器**只读打开 `context.db`**（内置 SQLite，WAL 并发读，绝不写、绝不跑迁移）。 |
 | 是否改 magic-context | **不改**。schema/SQL 知识按锁定的 0.41.4 源码在 OpenChamber fork 内实现并随版本跟进。 |
-| 版本一致性 | 只读读库内 `schema_migrations` 的持久化版本，> 84 则页面显示"插件版本过新"提示；库缺失显示引导空态。 |
+| 版本一致性 | 只读读库内 `schema_migrations` 的持久化版本，> 83 则页面显示"插件版本过新"提示；库缺失显示引导空态。 |
 | v1 边界 | web（含容器）+ Electron 桌面可检视；VS Code / mobile 无本机库 → 入口隐藏或不可用态。 |
 | 写入 | v1 零写入。面板只读；未来如需写，先评估"绕过插件记账"的风险（参考 dashboard 既有写语义）再单独立项。 |
 | 新增依赖 | 无。运行时内置 SQLite（Bun `bun:sqlite` / Node ≥22.13、Electron ≥43 `node:sqlite`）。 |
@@ -31,7 +31,7 @@
 ### 2.1 源系统（magic-context 0.41.4，本方案依据源码）
 
 - DB 路径：`<XDG_DATA_HOME 或 ~/.local/share>/cortexkit/magic-context/context.db`（`MAGIC_CONTEXT_STORAGE_DIR` 绝对路径可整体覆盖）。
-- 迁移登记表 `schema_migrations`（version/description/applied_at）。上游迁移 version < 10000，fork 本地迁移 ≥ 10000。**持久化 schema 版本 = `MAX(version) WHERE version < 10000`**；0.41.4 的 `LATEST_SUPPORTED_VERSION = 84`。插件自身用 `<=84` 做打开门槛，本 fork 复刻同一读法做兼容门槛。
+- 迁移登记表 `schema_migrations`（version/description/applied_at）。上游迁移 version < 10000，fork 本地迁移 ≥ 10000。**持久化 schema 版本 = `MAX(version) WHERE version < 10000`**；0.41.4 的 `LATEST_SUPPORTED_VERSION = 83`（v84 在 0.41.4 发布之后才合入）。插件自身用 `<=83` 做打开门槛，本 fork 复刻同一读法做兼容门槛。
 - WAL 模式 + 多 harness（opencode/pi/omp）共享同一库；会话行带 harness 列。
 - dashboard（Tauri+Rust）即"另一进程直读同库"的先例：读多写少、从不跑迁移。
 
@@ -61,13 +61,13 @@
 │  lib/mc-dashboard/（工厂模式，只读，无 RPC）                        │
 │   paths.js     路径/DB 解析（env 优先序同插件）                      │
 │   sqlite.js    运行时 SQLite 选择器（bun/node）+ 只读打开 + busy     │
-│   runtime.js   探测/门控状态机 + schema 版本门槛（≤84）             │
+│   runtime.js   探测/门控状态机 + schema 版本门槛（≤83）             │
 │   queries/*.js 按 0.41.4 语义的只读查询（M2 起逐面板增加）            │
 │   routes.js    GET /api/openchamber/mc/*（meta + 数据路由）          │
 └──────────────┬─────────────────────────────────────────────────────┘
                │ 只读打开（WAL 并发读，busy_timeout，绝不写/迁移）
 ┌──────────────▼─────────────────────────────────────────────────────┐
-│  <XDG_DATA_HOME>/cortexkit/magic-context/context.db（0.41.4，schema≤84）│
+│  <XDG_DATA_HOME>/cortexkit/magic-context/context.db（0.41.4，schema≤83）│
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,9 +88,9 @@
 `meta` 返回四态（UI 按状态渲染）：
 | 状态 | 含义 | 建议文案（示意） |
 |---|---|---|
-| `available` | schema ≤ 84 | 正常渲染面板，附 `schemaVersion`/`targetMcVersion` |
+| `available` | schema ≤ 83 | 正常渲染面板，附 `schemaVersion`/`targetMcVersion` |
 | `missing-db` | 无库（插件未启用/无数据） | "未检测到 magic-context 数据，请确认当前 OpenCode 已安装启用插件并产生过会话" |
-| `schema-too-new` | 库 schema > 84 | "检测到 magic-context 数据 schema v{实际}，当前 OpenChamber 兼容 ≤ v84（目标插件 ≤ 0.41.4），请降级插件或升级 OpenChamber" |
+| `schema-too-new` | 库 schema > 83 | "检测到 magic-context 数据 schema v{实际}，当前 OpenChamber 兼容 ≤ v83（目标插件 ≤ 0.41.4），请降级插件或升级 OpenChamber" |
 | `sqlite-unavailable`/`open-failed`/`storage-dir-unavailable` | 运行时不支持 / 库损坏 / 目录配置非法 | 对应一句话提示，不渲染面板 |
 
 状态判定在服务器权威完成；前端只消费状态，不自行猜。
@@ -131,7 +131,7 @@
 ## 9. 成功标准
 
 - 容器内跑 OpenChamber（web），managed OpenCode 装 0.41.4 插件并产生数据后，浏览器可从 MC 入口浏览项目/记忆/会话/cache/dreamer/config/logs。
-- 库缺失 / schema >84 / 库损坏三种情况页面分别给引导/提示/错误文案，不渲染假数据，不崩。
+- 库缺失 / schema >83 / 库损坏三种情况页面分别给引导/提示/错误文案，不渲染假数据，不崩。
 - 本 fork 不写一行 magic-context 代码；零新增包依赖；`meta` 门控与 queries 测试全绿；面板过运行时契约检查（web + Electron）。
 
 ## 10. 手动验证清单（容器 / web）
@@ -143,7 +143,7 @@
 3. `OPENCHAMBER_PORT=3000 bun run dev`（或 Electron `bun run electron:dev`），打开 设置 → Magic Context：
    - 有数据：显示 "Showing N of M" + 记忆列表，点 Load more 分页追加；
    - 无数据（插件未启用）：显示 missing-db 引导文案；
-   - schema > 84（插件比 0.41.4 新）：显示 schema-too-new 降级提示。
+   - schema > 83（插件比 0.41.4 新）：显示 schema-too-new 降级提示。
 4. 接口冒烟（同机）：`curl http://localhost:3000/api/openchamber/mc/meta`、`/memories?limit=10`、`/overview`（已登录会话后）。
-5. 异常态：临时把 `context.db` 改名 → missing-db；写入超 84 的假 schema → schema-too-new；写入损坏文件 → open-failed 提示，页面不崩、不显示假空列表。
+5. 异常态：临时把 `context.db` 改名 → missing-db；写入超 83 的假 schema → schema-too-new；写入损坏文件 → open-failed 提示，页面不崩、不显示假空列表。
 6. 降级自检：把插件换成更新版本再回来 → 页面仍按门控提示，绝不代跑迁移。

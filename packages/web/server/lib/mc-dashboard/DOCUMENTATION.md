@@ -5,7 +5,7 @@
 Gives the OpenChamber UI read-only diagnostics and inspection of the Magic
 Context plugin data of the managed OpenCode process. This fork does not modify
 or fork the magic-context plugin: it opens the plugin's `context.db` read-only,
-pinned to plugin `0.41.4` (schema `<= 84`). When the on-disk schema exceeds the
+pinned to plugin `0.41.4` (schema `<= 83`). When the on-disk schema exceeds the
 pinned ceiling, the server reports `schema-too-new` and the UI shows a version
 hint instead of reading incompatible state.
 
@@ -33,12 +33,17 @@ hint instead of reading incompatible state.
   `~/.local/share/cortexkit/magic-context`). Deployments that isolate the
   managed OpenCode environment (containers with separate homes, tunnel, custom
   env) report a clear unavailable state, never fabricated data.
+- **OpenCode database caveat.** Session listing resolves `opencode.db` from
+  `OPENCODE_DB` when set, otherwise the newest `opencode*.db` under the default
+  OpenCode data dir. If the managed OpenCode runs with a non-default data dir,
+  point the server env at the same `OPENCODE_DB` or accept that the list may
+  target another instance; a missing db reports `missing-opencode-db`.
 - **Read-only, no migrations.** The db opens with a read-only flag and a busy
   timeout; the server never writes, never runs migrations, and never opens
   `BEGIN IMMEDIATE`. Schema version is read the same way the plugin reads it
   (`MAX(version) WHERE version < 10000` from `schema_migrations`, 0 when the
   table is absent).
-- **Pinned compatibility fence.** `MC_MAX_SUPPORTED_SCHEMA = 84` matches plugin
+- **Pinned compatibility fence.** `MC_MAX_SUPPORTED_SCHEMA = 83` matches the released plugin
   `0.41.4`. A newer database reports `schema-too-new`; the UI shows copy that
   tells the user which plugin version to install.
 - **Failure is never empty success.** A missing database, a corrupt file, or an

@@ -103,6 +103,7 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     group: 'general',
     kind: 'single',
     keywords: ['magic context', 'memory', 'memories', 'context', 'mc', 'dashboard', 'plugin'],
+    isAvailable: (ctx) => !ctx.isVSCode,
   },
   {
     slug: 'agents',

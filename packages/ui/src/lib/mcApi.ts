@@ -153,7 +153,7 @@ const gatedSchema = z.object({
   schemaVersion: z.number().finite().optional(),
   maxSupportedSchema: z.number().finite().optional(),
   targetMcVersion: z.string().optional(),
-  detail: z.string().optional(),
+  detail: z.string().nullish(),
 });
 
 const metaOkSchema = z.object({

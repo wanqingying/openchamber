@@ -26,7 +26,7 @@ const toCamel = (row) => ({
   id: row.id,
   projectPath: row.project_path,
   category: row.category,
-  status: row.status,
+  status: row.status ?? 'active',
   importance: row.importance ?? null,
   scope: row.scope,
   sourceType: row.source_type ?? null,
