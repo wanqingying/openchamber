@@ -2312,4 +2312,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': '提示詞候選',
   'settings.magicContext.section.userMemoryCandidates': '使用者記憶候選',
   'settings.magicContext.section.mural': '壁畫',
+  'settings.magicContext.section.cacheTimeline': '快取時間線',
+  'settings.magicContext.severity.stable': '穩定',
+  'settings.magicContext.severity.warning': '警告',
+  'settings.magicContext.severity.bust': '未命中',
+  'settings.magicContext.severity.fullBust': '完全未命中',
+  'settings.magicContext.severity.info': '資訊',
+  'settings.magicContext.severity.unknown': '未知',
 } as const;

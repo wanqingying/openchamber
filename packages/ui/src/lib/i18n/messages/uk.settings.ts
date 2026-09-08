@@ -2312,4 +2312,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'Кандидати-праймери',
   'settings.magicContext.section.userMemoryCandidates': 'Кандидати памʼяті користувача',
   'settings.magicContext.section.mural': 'Мурал',
+  'settings.magicContext.section.cacheTimeline': 'Хронологія кешу',
+  'settings.magicContext.severity.stable': 'Стабільний',
+  'settings.magicContext.severity.warning': 'Попередження',
+  'settings.magicContext.severity.bust': 'Зрив',
+  'settings.magicContext.severity.fullBust': 'Повний зрив',
+  'settings.magicContext.severity.info': 'Інфо',
+  'settings.magicContext.severity.unknown': 'Невідомо',
 } as const;

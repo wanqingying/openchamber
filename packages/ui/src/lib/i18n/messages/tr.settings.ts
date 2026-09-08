@@ -2302,4 +2302,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'Primer adayları',
   'settings.magicContext.section.userMemoryCandidates': 'Kullanıcı anısı adayları',
   'settings.magicContext.section.mural': 'Mural',
+  'settings.magicContext.section.cacheTimeline': 'Önbellek zaman çizelgesi',
+  'settings.magicContext.severity.stable': 'Kararlı',
+  'settings.magicContext.severity.warning': 'Uyarı',
+  'settings.magicContext.severity.bust': 'Başarısız',
+  'settings.magicContext.severity.fullBust': 'Tam başarısız',
+  'settings.magicContext.severity.info': 'Bilgi',
+  'settings.magicContext.severity.unknown': 'Bilinmiyor',
 };

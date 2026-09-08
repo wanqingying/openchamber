@@ -2312,4 +2312,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'プライマー候補',
   'settings.magicContext.section.userMemoryCandidates': 'ユーザーメモリ候補',
   'settings.magicContext.section.mural': 'ミューラル',
+  'settings.magicContext.section.cacheTimeline': 'キャッシュの時間推移',
+  'settings.magicContext.severity.stable': '安定',
+  'settings.magicContext.severity.warning': '警告',
+  'settings.magicContext.severity.bust': '失敗',
+  'settings.magicContext.severity.fullBust': '完全失敗',
+  'settings.magicContext.severity.info': '情報',
+  'settings.magicContext.severity.unknown': '不明',
 } as const;

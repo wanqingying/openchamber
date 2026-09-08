@@ -2305,4 +2305,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'Kandydaci primerów',
   'settings.magicContext.section.userMemoryCandidates': 'Kandydaci wspomnień',
   'settings.magicContext.section.mural': 'Mural',
+  'settings.magicContext.section.cacheTimeline': 'Oś czasu pamięci podręcznej',
+  'settings.magicContext.severity.stable': 'Stabilna',
+  'settings.magicContext.severity.warning': 'Ostrzeżenie',
+  'settings.magicContext.severity.bust': 'Chybienie',
+  'settings.magicContext.severity.fullBust': 'Całkowite chybienie',
+  'settings.magicContext.severity.info': 'Info',
+  'settings.magicContext.severity.unknown': 'Nieznane',
 };

@@ -16,6 +16,8 @@ import type {
   McUserMemory,
   McWorkspace,
   McCacheSession,
+  McCacheTimeline,
+  McCacheSeverity,
   McPrimerCandidate,
   McUserMemoryCandidate,
   McMural,
@@ -43,6 +45,8 @@ interface Panels {
 
 const PAGE_SIZE = 100;
 const PANEL_LIMIT = 6;
+
+const SEVERITY_ORDER: ReadonlyArray<McCacheSeverity> = ['stable', 'warning', 'bust', 'full-bust', 'info', 'unknown'];
 
 const gatedView = (gated: McGated): Extract<View, { status: 'gated' }> => {
   const view: Extract<View, { status: 'gated' }> = { status: 'gated', reason: gated.reason };
@@ -81,12 +85,29 @@ const formatBytes = (value: number | null | undefined): string => {
 
 export const MagicContextPage: React.FC = () => {
   const { t } = useI18n();
+
+  const severityLabel = (severity: McCacheSeverity): string => {
+    switch (severity) {
+      case 'stable':
+        return t('settings.magicContext.severity.stable');
+      case 'warning':
+        return t('settings.magicContext.severity.warning');
+      case 'bust':
+        return t('settings.magicContext.severity.bust');
+      case 'full-bust':
+        return t('settings.magicContext.severity.fullBust');
+      case 'info':
+        return t('settings.magicContext.severity.info');
+      case 'unknown':
+        return t('settings.magicContext.severity.unknown');
+    }
+  };
+
   const [view, setView] = React.useState<View>({ status: 'loading' });
   const [overview, setOverview] = React.useState<McOverview | null>(null);
   const [items, setItems] = React.useState<McMemoryItem[]>([]);
   const [total, setTotal] = React.useState(0);
-  const [panels, setPanels] = React.useState<Panels>({
-    sessions: null,
+  const [panels, setPanels] = React.useState<Panels>({    sessions: null,
     cache: null,
     dreams: null,
     primers: null,
@@ -100,6 +121,7 @@ export const MagicContextPage: React.FC = () => {
   });
   const [loadMoreError, setLoadMoreError] = React.useState(false);
   const [search, setSearch] = React.useState('');
+  const [timeline, setTimeline] = React.useState<McCacheTimeline | null>(null);
 
   const loadPanels = React.useCallback(async () => {
     const [sessions, cache, dreams, primers, primerCandidates, userMemories, userMemoryCandidates, workspaces, murals, config, logs] = await Promise.allSettled([
@@ -124,6 +146,19 @@ export const MagicContextPage: React.FC = () => {
     const userMemoryCandidatesOk = userMemoryCandidates.status === 'fulfilled' && !('gated' in userMemoryCandidates.value) ? userMemoryCandidates.value : null;
     const workspacesOk = workspaces.status === 'fulfilled' && !('gated' in workspaces.value) ? workspaces.value : null;
     const muralsOk = murals.status === 'fulfilled' && !('gated' in murals.value) ? murals.value : null;
+    let nextTimeline: McCacheTimeline | null = null;
+    const firstSession = sessionsOk && sessionsOk.items.length > 0 ? sessionsOk.items[0] : null;
+    if (firstSession) {
+      try {
+        const timelineResult = await mcApi.fetchCacheTimeline(firstSession.id);
+        if (!('gated' in timelineResult)) {
+          nextTimeline = timelineResult;
+        }
+      } catch {
+        nextTimeline = null;
+      }
+    }
+    setTimeline(nextTimeline);
     setPanels({
       sessions: sessionsOk,
       cache: cacheOk,
@@ -144,6 +179,7 @@ export const MagicContextPage: React.FC = () => {
     setLoadMoreError(false);
     setOverview(null);
     setPanels({ sessions: null, cache: null, dreams: null, primers: null, primerCandidates: null, userMemories: null, userMemoryCandidates: null, workspaces: null, murals: null, config: null, logs: null });
+    setTimeline(null);
     try {
       const meta = await mcApi.fetchMeta();
       if (meta.gated) {
@@ -295,6 +331,33 @@ export const MagicContextPage: React.FC = () => {
                 </li>
               ))}
             </ul>
+          )}
+        </SettingsSection>
+      ) : null}
+      {timeline ? (
+        <SettingsSection title={t('settings.magicContext.section.cacheTimeline')}>
+          {timeline.events.length === 0 ? listPanel(true) : (
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-x-5 gap-y-1">
+                {SEVERITY_ORDER.map((severity) => (
+                  <div key={severity} className="flex items-baseline gap-1">
+                    <span className="text-base font-semibold tabular-nums text-foreground">{timeline.summary[severity] ?? 0}</span>
+                    <span className="typography-caption text-muted-foreground">{severityLabel(severity)}</span>
+                  </div>
+                ))}
+              </div>
+              <ul className="space-y-2">
+                {timeline.events.slice(-6).map((event) => (
+                  <li key={event.messageId} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <span className="typography-caption text-muted-foreground">{formatEpoch(event.time)}</span>
+                    <span className="typography-body text-foreground">{severityLabel(event.severity)}</span>
+                    <span className="typography-caption text-muted-foreground">
+                      read:{event.cacheRead} · write:{event.cacheWrite} · total:{event.totalTokens}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </SettingsSection>
       ) : null}

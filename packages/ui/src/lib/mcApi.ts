@@ -120,6 +120,26 @@ export interface McCacheSession {
   compartmentCount: number;
 }
 
+export type McCacheSeverity = 'stable' | 'warning' | 'bust' | 'full-bust' | 'info' | 'unknown';
+
+export interface McCacheEvent {
+  messageId: string;
+  time: number;
+  inputTokens: number;
+  outputTokens: number;
+  cacheRead: number;
+  cacheWrite: number;
+  totalTokens: number;
+  severity: McCacheSeverity;
+}
+
+export interface McCacheTimeline {
+  sessionId: string;
+  scanned: number;
+  events: McCacheEvent[];
+  summary: Record<McCacheSeverity, number>;
+}
+
 export interface McPrimerCandidate {
   id: number;
   projectPath: string;
@@ -300,6 +320,26 @@ const cacheSessionItemSchema = z.object({
   cachedM0Bytes: nullableInt(),
   memoryBlockCount: nullableInt(),
   compartmentCount: z.number().int().nonnegative(),
+});
+
+const cacheSeveritySchema = z.enum(['stable', 'warning', 'bust', 'full-bust', 'info', 'unknown']);
+
+const cacheEventSchema = z.object({
+  messageId: z.string(),
+  time: z.number().finite(),
+  inputTokens: z.number().int().nonnegative(),
+  outputTokens: z.number().int().nonnegative(),
+  cacheRead: z.number().int().nonnegative(),
+  cacheWrite: z.number().int().nonnegative(),
+  totalTokens: z.number().int().nonnegative(),
+  severity: cacheSeveritySchema,
+});
+
+const cacheTimelineSchema = z.object({
+  sessionId: z.string(),
+  scanned: z.number().int().nonnegative(),
+  events: z.array(cacheEventSchema),
+  summary: z.record(cacheSeveritySchema, z.number().int().nonnegative()),
 });
 
 const primerCandidateItemSchema = z.object({
@@ -508,6 +548,18 @@ export const createMcApi = (fetcher: McFetcher) => {
   const fetchCacheSessions = (options: { limit?: number; offset?: number } = {}) =>
     readList(`${BASE_PATH}/cache/sessions${listQuery(options)}`, cacheSessionItemSchema, 'Invalid Magic Context cache payload');
 
+  const fetchCacheTimeline = async (sessionId: string): Promise<McCacheTimeline | McGated> => {
+    const data = parseBody(
+      z.union([cacheTimelineSchema, gatedSchema]),
+      await requestText(`${BASE_PATH}/sessions/${encodeURIComponent(sessionId)}/cache-events`, 'Invalid Magic Context cache timeline payload'),
+      'Invalid Magic Context cache timeline payload',
+    );
+    if ('events' in data) {
+      return data;
+    }
+    return buildGated(data);
+  };
+
   const fetchPrimerCandidates = (options: { limit?: number; offset?: number } = {}) =>
     readList(`${BASE_PATH}/primer-candidates${listQuery(options)}`, primerCandidateItemSchema, 'Invalid Magic Context primer candidates payload');
 
@@ -537,6 +589,7 @@ export const createMcApi = (fetcher: McFetcher) => {
     fetchUserMemories,
     fetchWorkspaces,
     fetchCacheSessions,
+    fetchCacheTimeline,
     fetchPrimerCandidates,
     fetchUserMemoryCandidates,
     fetchMuralManifests,

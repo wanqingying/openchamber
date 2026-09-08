@@ -2312,4 +2312,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'Amorces candidates',
   'settings.magicContext.section.userMemoryCandidates': 'Mémoires utilisateur candidates',
   'settings.magicContext.section.mural': 'Mural',
+  'settings.magicContext.section.cacheTimeline': 'Chronologie du cache',
+  'settings.magicContext.severity.stable': 'Stable',
+  'settings.magicContext.severity.warning': 'Attention',
+  'settings.magicContext.severity.bust': 'Échec',
+  'settings.magicContext.severity.fullBust': 'Échec total',
+  'settings.magicContext.severity.info': 'Info',
+  'settings.magicContext.severity.unknown': 'Inconnu',
 } as const;

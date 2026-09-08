@@ -2312,4 +2312,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': '프라이머 후보',
   'settings.magicContext.section.userMemoryCandidates': '사용자 메모리 후보',
   'settings.magicContext.section.mural': '뮤럴',
+  'settings.magicContext.section.cacheTimeline': '캐시 타임라인',
+  'settings.magicContext.severity.stable': '안정',
+  'settings.magicContext.severity.warning': '경고',
+  'settings.magicContext.severity.bust': '실패',
+  'settings.magicContext.severity.fullBust': '완전 실패',
+  'settings.magicContext.severity.info': '정보',
+  'settings.magicContext.severity.unknown': '알 수 없음',
 } as const;

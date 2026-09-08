@@ -2303,4 +2303,11 @@ export const settingsDict = {
   'settings.magicContext.section.primerCandidates': 'Primer-Kandidaten',
   'settings.magicContext.section.userMemoryCandidates': 'Benutzererinnerungs-Kandidaten',
   'settings.magicContext.section.mural': 'Wandbild',
+  'settings.magicContext.section.cacheTimeline': 'Cache-Verlauf',
+  'settings.magicContext.severity.stable': 'Stabil',
+  'settings.magicContext.severity.warning': 'Warnung',
+  'settings.magicContext.severity.bust': 'Fehlschlag',
+  'settings.magicContext.severity.fullBust': 'Voller Fehlschlag',
+  'settings.magicContext.severity.info': 'Info',
+  'settings.magicContext.severity.unknown': 'Unbekannt',
 };
