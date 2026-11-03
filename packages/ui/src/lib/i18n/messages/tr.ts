@@ -583,6 +583,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'Sabitlenenler bölümünü göster',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'Ayrıntılı satırlar',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'Worktree’leri dala göre adlandır',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'Worktree’leri grupla',
   'sessions.sidebar.activity.pinnedTitle': 'Sabitlenenler',
   'sessions.sidebar.header.displayMode.showArchived': 'Arşivlenmiş session\'ları göster',
   'sessions.sidebar.header.displayMode.collapseAll': 'Tümünü daralt',

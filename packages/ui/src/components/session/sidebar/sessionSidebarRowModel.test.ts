@@ -883,6 +883,101 @@ describe('buildSessionSidebarRowModel', () => {
       expect(listedOf(buildSessionSidebarRowModel(input).rows)).toEqual(['project:project-a', 'project:root@0', 'work:worktree:/wt@0']);
     });
 
+    test('grouped, a project lists its worktrees as collapsible groups after its root sessions', () => {
+      const work = worktree([node('a1'), node('a2')]);
+      const empty = worktree([], 'empty');
+      const input = args([project([group([node('r0')]), work, empty])]);
+      input.groupRootWorktrees = true;
+      input.sessionOrderIndex = new Map([['r0', 0], ['a1', 1], ['a2', 2]]);
+
+      expect(listedOf(buildSessionSidebarRowModel(input).rows)).toEqual([
+        'project:project-a', 'project:r0@0',
+        'work:worktree:/wt@0', 'project:a1@1', 'project:a2@1',
+        'work:worktree:/empty@0',
+      ]);
+
+      input.collapsedGroups = new Set(['project-a:worktree:/wt']);
+      expect(listedOf(buildSessionSidebarRowModel(input).rows)).toEqual([
+        'project:project-a', 'project:r0@0', 'work:worktree:/wt@0', 'work:worktree:/empty@0',
+      ]);
+    });
+
+    test('grouped, a worktree spends no slot of the root show-more limit', () => {
+      const work = worktree([node('a1')]);
+      const roots = Array.from({ length: 8 }, (_, index) => node(`r${index}`));
+      const input = args([project([group(roots), work])]);
+      input.groupRootWorktrees = true;
+      input.sessionOrderIndex = new Map([...roots.map((root, index) => [root.session.id, index] as const), ['a1', 8]]);
+
+      const rows = buildSessionSidebarRowModel(input).rows;
+      const listed = listedOf(rows);
+
+      expect(listed.filter((entry) => entry.startsWith('project:r'))).toHaveLength(7);
+      expect(rows.find((row) => row.kind === 'show-control')).toMatchObject({ containerKey: 'project-a:main', currentCount: 7 });
+      expect(listed.slice(-2)).toEqual(['work:worktree:/wt@0', 'project:a1@1']);
+    });
+
+    test('grouped, a worktree filed into a folder of the root still renders inside it', () => {
+      const work = worktree([node('a1')]);
+      const input = args([project([group([node('root')]), work])]);
+      input.groupRootWorktrees = true;
+      input.foldersMap = { '/repo': [{ id: 'f', name: 'Releases', createdAt: 1, sessionIds: ['worktree:/wt'] }] };
+
+      expect(listedOf(buildSessionSidebarRowModel(input).rows)).toEqual([
+        'project:project-a', 'folder:Releases', 'work:worktree:/wt@1', 'project:a1@2', 'project:root@0',
+      ]);
+    });
+
+    test('grouped with the worktree kept in its project too, every key is unique and the collapse shared', () => {
+      const work = worktree([node('a1')]);
+      const input = args([project([group([]), work])]);
+      input.groupRootWorktrees = true;
+      input.workEntries = [{ kind: 'group', groupKey: 'project-a:worktree:/wt', projectId: 'project-a', group: work }];
+      input.collapsedGroups = new Set(['project-a:worktree:/wt']);
+
+      const model = buildSessionSidebarRowModel(input);
+      const headers = model.rows.filter((row) => row.kind === 'group-header');
+
+      expect(headers.map((row) => row.kind === 'group-header' && `${row.mixed}:${row.collapsed}:${row.depth}`)).toEqual(['true:true:0', 'false:true:0']);
+      expect(new Set(model.rows.map((row) => row.key)).size).toBe(model.rows.length);
+    });
+
+    test('grouped, the archive bucket keeps its place after the worktrees', () => {
+      const archivedSession = node('old');
+      archivedSession.session.time.archived = 1;
+      const archived = group([archivedSession], { id: 'archived', label: 'Archived', isMain: false, isArchivedBucket: true });
+      const work = worktree([node('a1')]);
+      const input = args([project([group([node('root')]), work, archived])]);
+      input.groupRootWorktrees = true;
+
+      const model = buildSessionSidebarRowModel(input);
+
+      expect(listedOf(model.rows)).toEqual([
+        'project:project-a', 'project:root@0', 'work:worktree:/wt@0', 'project:a1@1', 'work:archived@0', 'project:old@1',
+      ]);
+      expect(new Set(model.rows.map((row) => row.key)).size).toBe(model.rows.length);
+    });
+
+    test('grouped, search lists a worktree match under its own group', () => {
+      const work = worktree([node('a1')]);
+      const input = args([project([group([]), work])]);
+      input.groupRootWorktrees = true;
+      input.mode = 'search';
+      input.normalizedQuery = 'a1';
+      input.groupSearchDataByGroup.set(work, {
+        filteredNodes: work.sessions,
+        matchedSessionCount: 1,
+        folderNameMatchCount: 0,
+        groupMatches: false,
+        hasMatch: true,
+      });
+
+      const model = buildSessionSidebarRowModel(input);
+
+      expect(listedOf(model.rows)).toEqual(['project:project-a', 'work:worktree:/wt@0', 'project:a1@1']);
+      expect(model.searchMatchCount).toBe(1);
+    });
+
     test('a session work In work lists leaves its project when the collection moves it', () => {
       const input = args([project([group([node('working'), node('other')])])]);
       input.workEntries = sessionWorks([timelineItem('working')]);

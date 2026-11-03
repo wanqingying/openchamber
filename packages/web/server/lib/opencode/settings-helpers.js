@@ -484,6 +484,9 @@ export const createSettingsHelpers = (dependencies) => {
     if (candidate.sidebarWorktreeNameByBranch === true || candidate.sidebarWorktreeNameByBranch === false) {
       result.sidebarWorktreeNameByBranch = candidate.sidebarWorktreeNameByBranch;
     }
+    if (candidate.sidebarGroupRootWorktrees === true || candidate.sidebarGroupRootWorktrees === false) {
+      result.sidebarGroupRootWorktrees = candidate.sidebarGroupRootWorktrees;
+    }
     if (Array.isArray(candidate.sidebarSections)) {
       result.sidebarSections = sanitizeSidebarSections(candidate.sidebarSections);
     }

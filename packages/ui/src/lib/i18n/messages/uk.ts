@@ -671,6 +671,7 @@ export const dict: Record<I18nKey, string> = {
   "sessions.sidebar.header.displayMode.showPinned": "Показувати «Закріплені»",
   "sessions.sidebar.header.displayMode.detailedZoneRows": "Детальні рядки",
   "sessions.sidebar.header.displayMode.worktreeNameByBranch": "Називати worktree за гілкою",
+  "sessions.sidebar.header.displayMode.groupRootWorktrees": "Групувати worktree",
   "sessions.sidebar.activity.pinnedTitle": "Закріплені",
   "sessions.sidebar.header.displayMode.showArchived": "Показувати архівовані сесії",
   "sessions.sidebar.header.displayMode.collapseAll": "Згорнути все",

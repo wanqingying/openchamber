@@ -190,6 +190,8 @@ export const MobileSessionsSheet: React.FC<MobileSessionsSheetProps> = ({ open, 
   const setKeepWorkInPlace = useSessionDisplayStore((state) => state.setKeepWorkInPlace);
   const detailedZoneRows = useSessionDisplayStore((state) => state.detailedZoneRows);
   const setDetailedZoneRows = useSessionDisplayStore((state) => state.setDetailedZoneRows);
+  const groupRootWorktrees = useSessionDisplayStore((state) => state.groupRootWorktrees);
+  const setGroupRootWorktrees = useSessionDisplayStore((state) => state.setGroupRootWorktrees);
   const worktreeNameByBranch = useSessionDisplayStore((state) => state.worktreeNameByBranch);
   const setWorktreeNameByBranch = useSessionDisplayStore((state) => state.setWorktreeNameByBranch);
   const sessionWorkEnabled = useUIStore((state) => state.sessionWorkEnabled);
@@ -365,6 +367,9 @@ export const MobileSessionsSheet: React.FC<MobileSessionsSheetProps> = ({ open, 
         })) : null}
         {renderMenuChoice('detailed', 'sessions.sidebar.header.displayMode.detailedZoneRows', detailedZoneRows, toggleSetting(detailedZoneRows, setDetailedZoneRows, (next) => {
           void updateDesktopSettings({ sidebarDetailedZoneRows: next });
+        }))}
+        {renderMenuChoice('grouped-worktrees', 'sessions.sidebar.header.displayMode.groupRootWorktrees', groupRootWorktrees, toggleSetting(groupRootWorktrees, setGroupRootWorktrees, (next) => {
+          void updateDesktopSettings({ sidebarGroupRootWorktrees: next });
         }))}
         {renderMenuChoice('branch-names', 'sessions.sidebar.header.displayMode.worktreeNameByBranch', worktreeNameByBranch, toggleSetting(worktreeNameByBranch, setWorktreeNameByBranch, (next) => {
           void updateDesktopSettings({ sidebarWorktreeNameByBranch: next });

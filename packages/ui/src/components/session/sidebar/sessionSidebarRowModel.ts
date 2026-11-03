@@ -188,6 +188,12 @@ export type SessionSidebarRowModelArgs = {
    * worktrees. What nests inside a work stays one line.
    */
   detailedZoneRows?: boolean;
+  /**
+   * A project's worktree works as collapsible groups after its root's
+   * sessions, rather than listed among them (`mergeWorktreeEntries`). Off,
+   * the list is unchanged.
+   */
+  groupRootWorktrees?: boolean;
   foldersMap: SessionFoldersMap;
   groupSearchDataByGroup: WeakMap<SessionGroup, GroupSearchData>;
   normalizedQuery: string;
@@ -1196,11 +1202,20 @@ export const buildSessionSidebarRowModel = (args: SessionSidebarRowModelArgs): S
           && !movedGroupKeys.has(descriptor.groupKey) && !filedGroupKeys.has(descriptor.groupKey))
         .map((descriptor): WorktreeInFolder => ({ group: descriptor.group, groupKey: descriptor.groupKey })) : [];
       const listedGroupKeys = new Set(listedWorktrees.map((entry) => entry.groupKey));
+      // Grouped, each worktree work is its own collapsible group after the
+      // root's sessions, so the root keeps the merge of its own works only.
+      const groupedWorktrees = args.groupRootWorktrees === true;
       for (const descriptor of descriptors) {
         // A worktree work a section lists has left its project.
         if (movedGroupKeys.has(descriptor.groupKey) || filedGroupKeys.has(descriptor.groupKey) || listedGroupKeys.has(descriptor.groupKey)) continue;
         appendGroup(descriptor.group, descriptor.groupKey, descriptor.projectId, descriptor.hideGroupLabel, undefined, PROJECT_PLACEMENT,
-          descriptor.group.isMain ? worktreesByMemberId : undefined, descriptor.group.isMain ? listedWorktrees : undefined);
+          descriptor.group.isMain ? worktreesByMemberId : undefined,
+          descriptor.group.isMain && !groupedWorktrees ? listedWorktrees : undefined);
+        if (groupedWorktrees && descriptor.group.isMain) {
+          for (const worktree of listedWorktrees) {
+            appendGroup(worktree.group, worktree.groupKey, descriptor.projectId, false, undefined, PROJECT_PLACEMENT);
+          }
+        }
       }
     }
   };

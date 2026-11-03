@@ -661,6 +661,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'Show pinned section',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'Detailed rows',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'Name worktrees by branch',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'Group worktrees',
   'sessions.sidebar.activity.pinnedTitle': 'Pinned',
   'sessions.sidebar.header.displayMode.showArchived': 'Show archived sessions',
   'sessions.sidebar.header.displayMode.collapseAll': 'Collapse all',

@@ -687,6 +687,7 @@ export const dict: Record<I18nKey, string> = {
   'sessions.sidebar.header.displayMode.showPinned': '顯示已釘選部分',
   'sessions.sidebar.header.displayMode.detailedZoneRows': '詳細列',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': '依分支命名 worktree',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': '將 worktree 分組顯示',
   'sessions.sidebar.activity.pinnedTitle': '已釘選',
   'sessions.sidebar.header.displayMode.showArchived': '顯示已封存會話',
   'sessions.sidebar.header.displayMode.collapseAll': '全部摺疊',

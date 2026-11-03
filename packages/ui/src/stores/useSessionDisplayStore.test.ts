@@ -28,6 +28,19 @@ describe('useSessionDisplayStore detailed rows', () => {
   });
 });
 
+describe('useSessionDisplayStore worktree grouping', () => {
+  test('groups a project root worktrees by default and keeps the choice', () => {
+    const initialState = useSessionDisplayStore.getState();
+    try {
+      expect(useSessionDisplayStore.getState().groupRootWorktrees).toBe(true);
+      useSessionDisplayStore.getState().setGroupRootWorktrees(false);
+      expect(useSessionDisplayStore.getState().groupRootWorktrees).toBe(false);
+    } finally {
+      useSessionDisplayStore.setState({ groupRootWorktrees: initialState.groupRootWorktrees });
+    }
+  });
+});
+
 describe('useSessionDisplayStore project sorting', () => {
   test('defaults to manual ordering', () => {
     expect(useSessionDisplayStore.getState().projectSortOrder).toBe('manual');

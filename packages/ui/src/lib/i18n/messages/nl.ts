@@ -661,6 +661,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'Sectie Vastgezet tonen',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'Gedetailleerde rijen',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'Worktrees naar branch benoemen',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'Worktrees groeperen',
   'sessions.sidebar.activity.pinnedTitle': 'Vastgezet',
   'sessions.sidebar.header.displayMode.showArchived': 'Gearchiveerde sessies tonen',
   'sessions.sidebar.header.displayMode.collapseAll': 'Alles inklappen',

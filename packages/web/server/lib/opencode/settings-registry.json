@@ -366,6 +366,9 @@
     "sidebarWorktreeNameByBranch": {
       "scope": "profile"
     },
+    "sidebarGroupRootWorktrees": {
+      "scope": "profile"
+    },
     "sidebarSections": {
       "scope": "profile"
     },

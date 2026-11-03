@@ -594,6 +594,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'إظهار قسم المثبّتة',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'صفوف مفصّلة',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'تسمية worktree باسم الفرع',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'تجميع worktree',
   'sessions.sidebar.activity.pinnedTitle': 'المثبّتة',
   'sessions.sidebar.header.displayMode.showArchived': 'إظهار الجلسات المؤرشفة',
   'sessions.sidebar.header.displayMode.collapseAll': 'طي الكل',

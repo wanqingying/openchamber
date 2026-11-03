@@ -662,6 +662,7 @@ export const dict: Record<I18nKey, string> = {
   'sessions.sidebar.header.displayMode.showPinned': '고정됨 섹션 표시',
   'sessions.sidebar.header.displayMode.detailedZoneRows': '자세한 행',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'worktree를 브랜치 이름으로 표시',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'worktree 그룹으로 표시',
   'sessions.sidebar.activity.pinnedTitle': '고정됨',
   'sessions.sidebar.header.displayMode.showArchived': '보관된 세션 표시',
   'sessions.sidebar.header.displayMode.collapseAll': '모두 접기',
