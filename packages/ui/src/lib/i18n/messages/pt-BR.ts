@@ -644,6 +644,7 @@ export const dict: Record<I18nKey, string> = {
   "sessions.sidebar.header.displayMode.showPinned": "Mostrar fixadas",
   "sessions.sidebar.header.displayMode.detailedZoneRows": "Linhas detalhadas",
   "sessions.sidebar.header.displayMode.worktreeNameByBranch": "Nomear worktrees pelo branch",
+  "sessions.sidebar.header.displayMode.groupRootWorktrees": "Agrupar worktrees",
   "sessions.sidebar.activity.pinnedTitle": "Fixadas",
   "sessions.sidebar.header.displayMode.showArchived": "Mostrar sessões arquivadas",
   "sessions.sidebar.header.displayMode.collapseAll": "Recolher tudo",

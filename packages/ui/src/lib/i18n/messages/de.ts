@@ -582,6 +582,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'Bereich Angeheftet anzeigen',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'Ausführliche Zeilen',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'Worktrees nach Branch benennen',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'Worktrees gruppieren',
   'sessions.sidebar.activity.pinnedTitle': 'Angeheftet',
   'sessions.sidebar.header.displayMode.showArchived': 'Archivierte Sitzungen anzeigen',
   'sessions.sidebar.header.displayMode.collapseAll': 'Alle einklappen',

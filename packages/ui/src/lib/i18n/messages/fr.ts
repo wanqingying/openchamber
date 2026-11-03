@@ -470,6 +470,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'Afficher la section épinglées',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'Lignes détaillées',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'Nommer les worktrees d’après leur branche',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'Grouper les worktrees',
   'sessions.sidebar.activity.pinnedTitle': 'Épinglées',
   'sessions.sidebar.header.displayMode.collapseAll': 'Tout réduire',
   'sessions.sidebar.header.displayMode.expandAll': 'Tout développer',

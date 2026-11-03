@@ -66,6 +66,11 @@ type SessionDisplayStore = {
    */
   worktreeNameByBranch: boolean;
   /**
+   * A project's worktree works as collapsible groups after its root's
+   * sessions, instead of listed among them. On by default.
+   */
+  groupRootWorktrees: boolean;
+  /**
    * The sidebar's sections in order, the built-in ones included
    * (`lib/sidebarSections.ts`). Shared by every surface.
    */
@@ -93,6 +98,7 @@ type SessionDisplayStore = {
   setShowPinnedSection: (show: boolean) => void;
   setDetailedZoneRows: (detailed: boolean) => void;
   setWorktreeNameByBranch: (byBranch: boolean) => void;
+  setGroupRootWorktrees: (grouped: boolean) => void;
   setShowArchivedSessions: (show: boolean) => void;
   toggleArchivedSessions: () => void;
   setProjectSortOrder: (order: ProjectSortOrder) => void;
@@ -184,6 +190,7 @@ export const useSessionDisplayStore = create<SessionDisplayStore>()(
       showPinnedSection: true,
       detailedZoneRows: getSettingsSurface() === 'mobile',
       worktreeNameByBranch: false,
+      groupRootWorktrees: true,
       sections: [...DEFAULT_SIDEBAR_SECTIONS],
       pinLists: [],
       hiddenSections: [],
@@ -202,6 +209,7 @@ export const useSessionDisplayStore = create<SessionDisplayStore>()(
       setShowPinnedSection: (show) => set({ showPinnedSection: show }),
       setDetailedZoneRows: (detailed) => set({ detailedZoneRows: detailed }),
       setWorktreeNameByBranch: (byBranch) => set({ worktreeNameByBranch: byBranch }),
+      setGroupRootWorktrees: (grouped) => set({ groupRootWorktrees: grouped }),
       setShowArchivedSessions: (show) => set({ showArchivedSessions: show }),
       toggleArchivedSessions: () => set((state) => ({ showArchivedSessions: !state.showArchivedSessions })),
       setProjectSortOrder: (order) => set({ projectSortOrder: order }),

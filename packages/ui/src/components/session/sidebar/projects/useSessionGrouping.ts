@@ -288,8 +288,10 @@ export const useSessionGrouping = (args: Args) => {
         return aLabel.localeCompare(bLabel);
       };
       // A worktree is a work like the project root's: by its latest activity.
-      // The row model lists them among the root's works by the same measure;
-      // this order settles the ones with no session yet, newest first.
+      // Grouped under the project, the row model lists the groups in this
+      // order; with grouping off it merges them among the root's works by the
+      // same measure. This order settles the ones with no session yet, newest
+      // first.
       const sortedWorktrees = [...availableWorktrees].sort((a, b) => {
         const aDir = normalizePath(a.path) ?? a.path;
         const bDir = normalizePath(b.path) ?? b.path;

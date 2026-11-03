@@ -116,21 +116,29 @@ archive bucket containing top-level sessions only. Restoring a root restores
 its archived descendants through the shared action. Web, Electron, hosted mobile
 and Capacitor keep their existing Chats and Archive views.
 
-A project lists its worktree works among the works of its root, not in a
-block after them: the row model (`mergeWorktreeEntries` in
-`sessionSidebarRowModel.ts`) puts each at the place of its most recent
-session in the shared lifecycle order (`sessionOrderIndex`), so a worktree
-someone just worked in leads the list as a session there would. Its archived
-sessions count too (`buildWorktreeArchiveAnchors` in `works/sidebarWorks.ts`,
+A project's worktree works are collapsible groups after the project root's
+sessions: each is one group row, with its worktree's sessions under it, opened
+or folded as any group row (`groupRootWorktrees` in `useSessionDisplayStore`,
+`sidebarGroupRootWorktrees`, on by default, one value for every surface). A
+worktree that never had a session still gets its empty, open group row, and
+each group opens on its own 7-session Show more, so a worktree costs the
+project root no slot. An isolated space is grouped the same way: it is a work
+of its own (see Works). With the toggle off, the row model
+(`mergeWorktreeEntries` in `sessionSidebarRowModel.ts`) lists each worktree
+among the works of the root instead: at the place of its most recent session
+in the shared lifecycle order (`sessionOrderIndex`), so a worktree someone
+just worked in leads the list as a session there would. Its archived sessions
+count too (`buildWorktreeArchiveAnchors` in `works/sidebarWorks.ts`,
 `worktreeArchiveAnchors` on the row model, and the list by time through
 `orderSidebarWorks`): archiving the newest session in a worktree is not work,
 so the worktree keeps the place that session gave it instead of falling to
 the next one's, and a worktree whose sessions are all archived stays where it
-was. A worktree spends one slot of the root's Show more limit, like a run; one
-that never had a session closes the list, the newest first (`useSessionGrouping`). An isolated
-space is listed the same way: it is a work of its own (see Works). Worktrees and spaces filed
-in a folder stay in the folder; the archive bucket follows the list. There is no worktree sort and no worktree dragging, on the phone either:
-its project editor lists the worktrees in the topology's order, with Delete.
+was. There it spends one slot of the root's Show more limit, like a run; one
+that never had a session closes the list, the newest first
+(`useSessionGrouping`). Worktrees and spaces filed in a folder stay in the
+folder either way; the archive bucket follows the list. There is no worktree
+sort and no worktree dragging, on the phone either: its project editor lists
+the worktrees in the topology's order, with Delete.
 
 Every other list of projects shows them in the sidebar's order through
 `list/useProjectsInSidebarOrder.ts`: Settings > Projects, the project
@@ -162,7 +170,8 @@ no Shift.
   the dialogs a row opens (project edit, new worktree, worktree delete). The
   display menu holds Grouping (by project or by time, `sidebarGrouping`), the
   project sort while grouped by project, Show pinned section, Show In work,
-  "Also show in work under projects", Detailed rows, "Name worktrees by
+  "Also show in work under projects", Detailed rows, "Group worktrees",
+  "Name worktrees by
   branch" and Reorder projects. Chats
   shows while the per-surface show-chats setting is on, which Settings owns
   (#5354); the header's New chat starts a chat, so Chats has no "+" of its own.
@@ -480,7 +489,10 @@ the draft rows of its folder. The row is the worktree's (`WorktreeWorkRow`,
   time) while it is being made or runs (`liveSpaceIds`), where a worktree
   without sessions closes it: it was made to be used now, and at the end it
   fell under Show more and looked missing. One whose making failed or whose
-  container is gone closes the list like that worktree. While it is
+  container is gone closes the list like that worktree. Grouped under the
+  project (`groupRootWorktrees`), every space keeps a group row of its own, so
+  a live space is listed among the project's groups rather than leading the
+  root's sessions. While it is
   made, the draft that waits for it sits on the project root and names the
   space by its creation request (`spaceOfCreationRequest`); the row counts
   that draft as begun there, so it is listed in In work and selected.
@@ -511,8 +523,8 @@ setting, and VS Code always groups by project. The display menu opens with Selec
 then Sections…, which opens the sections manager beside the sidebar (the order,
 each section's visibility, "Also show in work under projects" under In work
 (`keepWorkInPlace`, `sidebarKeepWorkInPlace`, off by default) and the user's
-own sections), Detailed rows, "Name worktrees by branch", then Collapse all /
-Expand all. The phone's display menu keeps its toggles and lists the user's
+own sections), Detailed rows, "Group worktrees", "Name worktrees by branch",
+then Collapse all / Expand all. The phone's display menu keeps its toggles and lists the user's
 sections as toggles too; it has no manager.
 
 - Chats rows are one line with the tree's slot (`'tree-chat'`). Chats open
@@ -1121,16 +1133,20 @@ with the grouping as its only choice (2026-10). Rows are one line with no
 project icon and no date: the order already says how recent a work is, the
 tooltip names its project and time, and the room goes to the title.
 
-### Why a worktree is listed among the project's sessions
+### Why worktrees are grouped after the project's sessions
 
-A worktree was a block of its own under the project, after every session of
-the project root, with its own sort (recent, manual with dragging, A to Z).
-Once a worktree became a work like a root session, that block hid it: a
-worktree with the newest session sat under Show more, below sessions days
-old. The maintainer decided (2026-10-24) that a worktree is a task like any
-other of the project, with a collapsible group of its own, so it is listed
-among them by its latest activity, and the worktree sort, the saved drag
-order (`oc.sessions.groupOrder`) and worktree dragging went with the block.
+Upstream lists a worktree among a project root's works, at the place of its
+latest activity (2.5.2, PR #5578). In a project with several worktrees that
+hides the boundary: a worktree's sessions sit between root sessions, a
+worktree with no session closes the list under Show more, and only a grouped
+row says where one worktree ends and the next begins. This fork lists each
+worktree as a collapsible group after the project root's sessions
+(`groupRootWorktrees`, on by default), so a project reads as its own sessions
+and then one group per worktree, and a search lists the worktree's matches
+under its own row. The upstream layout stays behind the toggle: with it off,
+`mergeWorktreeEntries` lists a worktree among the root's works at its latest
+session, with the archive anchors, one Show more slot each and the empty
+worktree closing the list.
 
 ### Why the phone draws the desktop's rows and not its own list
 

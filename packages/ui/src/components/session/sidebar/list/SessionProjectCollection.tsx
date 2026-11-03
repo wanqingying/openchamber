@@ -434,6 +434,7 @@ const VisibleSessionProjects: React.FC<SessionProjectCollectionProps> = ({ topol
   const showWorkSection = useSessionDisplayStore((state) => state.showWorkSection);
   const showPinnedSection = useSessionDisplayStore((state) => state.showPinnedSection);
   const detailedZoneRows = useSessionDisplayStore((state) => state.detailedZoneRows);
+  const groupRootWorktrees = useSessionDisplayStore((state) => state.groupRootWorktrees);
   const savedSections = useSessionDisplayStore((state) => state.sections);
   const hiddenSections = useSessionDisplayStore((state) => state.hiddenSections);
   const sectionDraft = useSidebarSectionsUiStore((state) => state.draft);
@@ -1199,6 +1200,7 @@ const VisibleSessionProjects: React.FC<SessionProjectCollectionProps> = ({ topol
     movedGroupKeys,
     zoneSessionIds,
     detailedZoneRows,
+    groupRootWorktrees,
     foldersMap,
     groupSearchDataByGroup,
     normalizedQuery: view.normalizedSessionSearchQuery,
@@ -1225,7 +1227,7 @@ const VisibleSessionProjects: React.FC<SessionProjectCollectionProps> = ({ topol
     sessionBatchSize: singleProjectMode && !view.useGroupedSections ? 20 : undefined,
     runIndex,
     blocks: sidebarBlocks,
-  }), [blockDrag, sidebarBlocks, runIndex, archivedChatGroup, chatGroup, showChatsSection, rowCollapsedActivities, pinnedItems, pinnedWorktreeEntries, workEntries, timeEntries, draftPlacement, movedSessionIds, movedGroupKeys, zoneSessionIds, detailedZoneRows, collapsedFolderIds, collection.pinnedSessionIds, expandedParents, folderAuthorityByOwner, foldersMap, groupSearchDataByGroup, groupStatusByKey, orderedSectionsForRender, ownership.bySessionId, projectSections, collapsedGroups, rowCollapsedProjects, selectedSingleProjectId, sessionOrderIndex, singleProjectMode, view.activeProjectId, view.hasSessionSearchQuery, view.hideDirectoryControls, view.normalizedSessionSearchQuery, view.showOnlyMainWorkspace, view.useGroupedSections, visibleCountByContainer, worktreeArchiveAnchors, liveSpaceIds]);
+  }), [blockDrag, sidebarBlocks, runIndex, archivedChatGroup, chatGroup, showChatsSection, rowCollapsedActivities, pinnedItems, pinnedWorktreeEntries, workEntries, timeEntries, draftPlacement, movedSessionIds, movedGroupKeys, zoneSessionIds, detailedZoneRows, groupRootWorktrees, collapsedFolderIds, collection.pinnedSessionIds, expandedParents, folderAuthorityByOwner, foldersMap, groupSearchDataByGroup, groupStatusByKey, orderedSectionsForRender, ownership.bySessionId, projectSections, collapsedGroups, rowCollapsedProjects, selectedSingleProjectId, sessionOrderIndex, singleProjectMode, view.activeProjectId, view.hasSessionSearchQuery, view.hideDirectoryControls, view.normalizedSessionSearchQuery, view.showOnlyMainWorkspace, view.useGroupedSections, visibleCountByContainer, worktreeArchiveAnchors, liveSpaceIds]);
   React.useEffect(() => {
     onSearchMatchCountChange(sidebarRowModel.searchMatchCount);
   }, [onSearchMatchCountChange, sidebarRowModel.searchMatchCount]);

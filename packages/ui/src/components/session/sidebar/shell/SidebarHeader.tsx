@@ -108,6 +108,8 @@ export function SidebarHeader(props: Props): React.ReactNode {
   const setDetailedZoneRows = useSessionDisplayStore((state) => state.setDetailedZoneRows);
   const worktreeNameByBranch = useSessionDisplayStore((state) => state.worktreeNameByBranch);
   const setWorktreeNameByBranch = useSessionDisplayStore((state) => state.setWorktreeNameByBranch);
+  const groupRootWorktrees = useSessionDisplayStore((state) => state.groupRootWorktrees);
+  const setGroupRootWorktrees = useSessionDisplayStore((state) => state.setGroupRootWorktrees);
   const projectSortOrder = useSessionDisplayStore((state) => state.projectSortOrder);
   const setProjectSortOrder = useSessionDisplayStore((state) => state.setProjectSortOrder);
   const sidebarGrouping = useSessionDisplayStore(resolveSidebarGrouping);
@@ -214,6 +216,10 @@ export function SidebarHeader(props: Props): React.ReactNode {
       {toggleItem({ labelKey: 'sessions.sidebar.header.displayMode.detailedZoneRows', icon: 'list-check-2' }, detailedZoneRows, () => {
         setDetailedZoneRows(!detailedZoneRows);
         void updateDesktopSettings({ sidebarDetailedZoneRows: !detailedZoneRows });
+      })}
+      {toggleItem({ labelKey: 'sessions.sidebar.header.displayMode.groupRootWorktrees', icon: 'node-tree' }, groupRootWorktrees, () => {
+        setGroupRootWorktrees(!groupRootWorktrees);
+        void updateDesktopSettings({ sidebarGroupRootWorktrees: !groupRootWorktrees });
       })}
       {toggleItem({ labelKey: 'sessions.sidebar.header.displayMode.worktreeNameByBranch', icon: 'git-branch' }, worktreeNameByBranch, () => {
         setWorktreeNameByBranch(!worktreeNameByBranch);

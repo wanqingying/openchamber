@@ -581,6 +581,7 @@ export const dict = {
   'sessions.sidebar.header.displayMode.showPinned': 'הצג את קטע המוצמדות',
   'sessions.sidebar.header.displayMode.detailedZoneRows': 'שורות מפורטות',
   'sessions.sidebar.header.displayMode.worktreeNameByBranch': 'שם worktree לפי הענף',
+  'sessions.sidebar.header.displayMode.groupRootWorktrees': 'קבץ worktree',
   'sessions.sidebar.activity.pinnedTitle': 'מוצמדות',
   'sessions.sidebar.header.displayMode.showArchived': 'הצג הפעלות בארכיון',
   'sessions.sidebar.header.displayMode.collapseAll': 'כווץ הכול',
